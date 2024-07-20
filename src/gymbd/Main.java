@@ -1,12 +1,13 @@
 package gymbd;
 
-import GUI.MenuPrincipal;
+import GUI.Test;
+import GUI.Principal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
 public class Main {
     
-    private static MenuPrincipal menu;
+    private static Principal menu;
 
     private static DBManager dbManager = new DBManager();
     private static Connection connection;
@@ -14,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         
-        menu = new MenuPrincipal();
+        menu = new Principal();
         
 //        connection = dbManager.abrirConexion();
 //
