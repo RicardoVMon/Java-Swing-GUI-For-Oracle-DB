@@ -268,9 +268,9 @@ public class Pedidos extends javax.swing.JFrame {
                         .addGap(422, 422, 422)
                         .addComponent(jHora))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(394, 394, 394)
+                        .addGap(411, 411, 411)
                         .addComponent(jLabel1)))
-                .addContainerGap(447, Short.MAX_VALUE))
+                .addContainerGap(430, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -417,7 +417,7 @@ public class Pedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPedidosActionPerformed
 
     public void generarHora() {
-        Timer timer = new Timer(1000, new ActionListener() {
+        Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Obtener la hora actual y formatearla

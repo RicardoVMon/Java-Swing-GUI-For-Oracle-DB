@@ -416,7 +416,7 @@ public class Inventario extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPedidosActionPerformed
 
     public void generarHora() {
-        Timer timer = new Timer(1000, new ActionListener() {
+        Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Obtener la hora actual y formatearla
