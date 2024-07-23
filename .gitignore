@@ -5,7 +5,7 @@
 # Ignore build directories
 /bin/
 /build/
-dist/
+/dist/*.jar
 
 # Ignore NetBeans specific files
 nbproject/private/
