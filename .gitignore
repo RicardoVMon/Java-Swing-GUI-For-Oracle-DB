@@ -6,6 +6,7 @@
 /bin/
 /build/
 /dist/*.jar
+/dist/
 
 # Ignore NetBeans specific files
 nbproject/private/
