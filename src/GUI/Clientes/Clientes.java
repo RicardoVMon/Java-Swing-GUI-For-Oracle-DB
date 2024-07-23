@@ -327,7 +327,7 @@ public class Clientes extends javax.swing.JFrame {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, false
+                false, true, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -335,9 +335,6 @@ public class Clientes extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tableClientes);
-        if (tableClientes.getColumnModel().getColumnCount() > 0) {
-            tableClientes.getColumnModel().getColumn(1).setResizable(false);
-        }
 
         btnAgregarCliente.setText("Agregar");
         btnAgregarCliente.addActionListener(new java.awt.event.ActionListener() {
