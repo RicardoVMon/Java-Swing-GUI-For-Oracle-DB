@@ -42,9 +42,11 @@ public class Main {
         if (connection != null) {
             resultSet = dbManager.ejecutarConsulta(connection, "SELECT * FROM PRUEBA");
             try {
-                while (resultSet.next()) {
+                int contador = 0;
+                while (resultSet.next() && contador != 5) {
                     System.out.println(resultSet.getString("first_name") + " " + resultSet.getString("last_name")
                             + resultSet.getString("last_name") + " " + resultSet.getString("job_id"));
+                    contador++;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
