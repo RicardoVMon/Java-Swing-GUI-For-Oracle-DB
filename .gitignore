@@ -1,4 +1,11 @@
-.vscode/
-/dist/
+
+# Ignore compiled class files
+*.class
+
+# Ignore build directories
+/bin/
 /build/
+
+# Ignore NetBeans specific files
 nbproject/private/
+build/
