@@ -123,7 +123,7 @@ public class Test extends javax.swing.JFrame {
         connection = dbManager.abrirConexion();
 
         if (connection != null) {
-            resultSet = dbManager.ejecutarConsulta(connection, "SELECT * FROM PRUEBA");
+            resultSet = dbManager.ejecutarProcedimiento(connection, "SELECT * FROM PRUEBA");
             try {
                 while (resultSet.next()) {
                     System.out.println(resultSet.getString("first_name") + " " + resultSet.getString("last_name")

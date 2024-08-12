@@ -1,16 +1,17 @@
 package gymbd;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import oracle.jdbc.OracleTypes;
 
 public class DBManager {
 
     private static String jdbcURL = "jdbc:oracle:thin:@localhost:1521:orcl";
     private static String username = "PLENGUAJES";
     private static String password = "PL";
-    private Statement statement = null;
+    private CallableStatement callableStatement = null;
     private ResultSet resultSet = null;
 
     public Connection abrirConexion() {
@@ -26,11 +27,25 @@ public class DBManager {
         }
     }
 
-    public ResultSet ejecutarConsulta(Connection conexion, String sql) {
+    public ResultSet ejecutarProcedimiento(Connection conexion, String sql) {
         try {
-            statement = conexion.createStatement();
-            resultSet = statement.executeQuery(sql);
+            callableStatement = conexion.prepareCall(sql);
+            callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
+            callableStatement.execute();
+            resultSet = (ResultSet) callableStatement.getObject(1);
             return resultSet;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Object ejecutarFuncion(Connection conexion, String sql, int tipoSalida) {
+        try {
+            callableStatement = conexion.prepareCall(sql);
+            callableStatement.registerOutParameter(1, tipoSalida);
+            callableStatement.execute();
+            return callableStatement.getObject(1);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -48,9 +63,9 @@ public class DBManager {
         }
 
         try {
-            if (statement != null && !statement.isClosed()) {
-                statement.close();
-                System.out.println("Statement cerrado");
+            if (callableStatement != null && !callableStatement.isClosed()) {
+                callableStatement.close();
+                System.out.println("CallableStatement cerrado");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,5 +80,5 @@ public class DBManager {
             e.printStackTrace();
         }
     }
-
 }
+

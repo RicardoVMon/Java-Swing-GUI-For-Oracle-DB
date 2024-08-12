@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 public class Main {
-    
+
     private static Principal menu;
     private static DBManager dbManager = new DBManager();
     private static Connection connection;
@@ -14,18 +14,18 @@ public class Main {
 
     public static void main(String[] args) {
         String[] opciones = {"Probar conexión a base de datos", "Abrir interfaz GUI"};
-        int choice = JOptionPane.showOptionDialog(null, 
-                "Seleccione una opción para visualizar", 
-                "Menu", 
-                JOptionPane.DEFAULT_OPTION, 
-                JOptionPane.INFORMATION_MESSAGE, 
-                null, 
-                opciones, 
+        int choice = JOptionPane.showOptionDialog(null,
+                "Seleccione una opción para visualizar",
+                "Menu",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                opciones,
                 opciones[0]);
 
         switch (choice) {
             case 0:
-                probarConexion();
+                probarConexionFuncion();
                 break;
             case 1:
                 menu = new Principal();
@@ -34,25 +34,22 @@ public class Main {
                 System.exit(0);
         }
     }
-    
-    public static void probarConexion() {
 
+    public static void probarConexionFuncion() {
         connection = dbManager.abrirConexion();
 
         if (connection != null) {
-            resultSet = dbManager.ejecutarConsulta(connection, "SELECT * FROM PRUEBA");
-            try {
-                int contador = 0;
-                while (resultSet.next() && contador != 5) {
-                    System.out.println(resultSet.getString("first_name") + " " + resultSet.getString("last_name")
-                            + resultSet.getString("last_name") + " " + resultSet.getString("job_id"));
-                    contador++;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            // Llamada a una función que retorna un número
+            Object resultado = dbManager.ejecutarFuncion(connection, "{? = call CANTIDAD_CLIENTES()}", java.sql.Types.NUMERIC);
+
+            if (resultado != null) {
+                System.out.println("Resultado de la función: " + resultado);
+            } else {
+                System.out.println("No se pudo obtener el resultado de la función");
             }
+
             dbManager.cerrarConexion(connection);
         }
-
     }
+
 }
