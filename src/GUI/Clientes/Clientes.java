@@ -13,11 +13,15 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,14 +29,17 @@ import javax.swing.Timer;
  */
 public class Clientes extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public Clientes() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+        dbManager = new DBManager();
+        obtenerDatosIniciales();
 
     }
 
@@ -317,17 +324,14 @@ public class Clientes extends javax.swing.JFrame {
 
         tableClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
-                "ID", "Nombre", "Fecha Nacimiento", "Email", "Teléfono", "Membresía"
+                "ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Edad", "Email", "Teléfono", "Membresía"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true
+                false, true, true, true, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -468,7 +472,7 @@ public class Clientes extends javax.swing.JFrame {
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
         Principal principal = new Principal();
-        
+
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
@@ -482,8 +486,8 @@ public class Clientes extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPagosActionPerformed
 
     private void jbEvaluacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEvaluacionesActionPerformed
-       this.dispose();
-       Evaluaciones evaluaciones = new Evaluaciones();
+        this.dispose();
+        Evaluaciones evaluaciones = new Evaluaciones();
     }//GEN-LAST:event_jbEvaluacionesActionPerformed
 
     private void jbMembresiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMembresiasActionPerformed
@@ -558,6 +562,35 @@ public class Clientes extends javax.swing.JFrame {
             }
         });
         timer.start();
+    }
+
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableClientes.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            resultSet = dbManager.ejecutarProcedimiento(connection, "{CALL Obtener_Clientes(?)}");
+
+            try {
+                while (resultSet.next()) {
+                    modeloTabla.addRow(new Object[]{
+                        resultSet.getString("id_cliente"), 
+                        resultSet.getString("nombre"), 
+                        resultSet.getString("apellido_paterno"), 
+                        resultSet.getString("apellido_materno"),
+                        resultSet.getString("edad"),
+                        resultSet.getString("email"),
+                        resultSet.getString("telefono"),
+                        resultSet.getString("nombre_membresia")
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
     }
 
     public static void main(String args[]) {
