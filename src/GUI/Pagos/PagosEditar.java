@@ -15,10 +15,16 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClienteDAO;
+import gymbd.DBManager;
+import gymbd.PagosDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -27,14 +33,32 @@ import javax.swing.Timer;
  */
 public class PagosEditar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PagosEditar
-     */
+    private static DBManager dbManager;
+    private static PagosDAO pagosDAO;
+    private static ClienteDAO clienteDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+    private static int idPago;
+    private static int idCliente;
+
     public PagosEditar() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+    }
+
+    public PagosEditar(int idPago, int idCliente) {
+        initComponents();
+        dbManager = new DBManager();
+        pagosDAO = new PagosDAO();
+        clienteDAO = new ClienteDAO();
+        this.setVisible(true);
+        this.setLocationRelativeTo(null);
+        this.idPago = idPago;
+        this.idCliente = idCliente;
+        generarHora();
+        obtenerDatosPago(idPago);
     }
 
     /**
@@ -75,14 +99,14 @@ public class PagosEditar extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
+        txtMonto = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
-        txtNombre2 = new javax.swing.JTextField();
+        txtConcepto = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbPago = new javax.swing.JComboBox<>();
         btnModificar = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cbClientes = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -350,19 +374,24 @@ public class PagosEditar extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setText("Concepto");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        cbPago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Efectivo", "Tarjeta" }));
+        cbPago.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                cbPagoActionPerformed(evt);
             }
         });
 
         btnModificar.setText("Modificar");
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
+                btnModificarActionPerformed(evt);
+            }
+        });
+
+        cbClientes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbClientesActionPerformed(evt);
             }
         });
 
@@ -376,7 +405,7 @@ public class PagosEditar extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
@@ -388,14 +417,14 @@ public class PagosEditar extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtNombre2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                                .addComponent(cbPago, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtConcepto, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel14)
                             .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(33, 33, 33))))
         );
         jPanel5Layout.setVerticalGroup(
@@ -408,7 +437,7 @@ public class PagosEditar extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -419,14 +448,14 @@ public class PagosEditar extends javax.swing.JFrame {
                         .addComponent(jLabel15)
                         .addGap(9, 9, 9)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtConcepto, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel13)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
-                    .addComponent(jComboBox1))
+                    .addComponent(cbPago))
                 .addContainerGap(43, Short.MAX_VALUE))
         );
 
@@ -598,13 +627,48 @@ public class PagosEditar extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFechaActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void cbPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPagoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_cbPagoActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+    private void cbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbClientesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
+    }//GEN-LAST:event_cbClientesActionPerformed
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+//                 Convertir el valor de edad a entero
+                int monto = Integer.parseInt(txtMonto.getText());
+
+//                 Ejecuta el procedimiento almacenado
+                boolean resultado = pagosDAO.actualizarPago(connection,
+                        idPago,
+                        monto,
+                        txtFecha.getText(),
+                        cbPago.getSelectedItem().toString(),
+                        txtConcepto.getText(),
+                        cbClientes.getSelectedItem().toString());
+
+                if (resultado) {
+                    JOptionPane.showMessageDialog(this, "Pago actualizado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al actualizar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error en la conversión de números: " + e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -623,7 +687,82 @@ public class PagosEditar extends javax.swing.JFrame {
         });
         timer.start();
     }
-    
+
+    public void obtenerDatosPago(int idPago) {
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                llenarComboBoxClientes(connection);  // Llena el comboBox de clientes
+                resultSet = pagosDAO.obtenerPagoPorID(connection, idPago);
+
+                if (resultSet != null) {
+                    if (resultSet.next()) {
+
+                        Date fechaPago = resultSet.getTimestamp("fecha_pago");
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        String fechaFormateada = sdf.format(fechaPago);
+
+                        // Establece los valores en los campos de texto
+                        txtMonto.setText(resultSet.getString("Monto"));
+                        txtFecha.setText(fechaFormateada);
+                        txtConcepto.setText(resultSet.getString("Concepto"));
+
+                        // Obtener el nombre del cliente desde el ResultSet
+                        String nombreCliente = resultSet.getString("Nombre_Cliente");
+                        String metodoPago = resultSet.getString("Metodo_Pago");
+
+                        // Seleccionar el cliente en el comboBox
+                        for (int i = 0; i < cbClientes.getItemCount(); i++) {
+                            if (cbClientes.getItemAt(i).equals(nombreCliente)) {
+                                cbClientes.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+
+                        // Seleccionar el método de pago en el comboBox
+                        for (int i = 0; i < cbPago.getItemCount(); i++) {
+                            if (cbPago.getItemAt(i).equals(metodoPago)) {
+                                cbPago.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                    } else {
+                        System.out.println("No se encontraron datos para el ID de pago proporcionado.");
+                    }
+                } else {
+                    System.out.println("ResultSet es nulo.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }
+
+    public void llenarComboBoxClientes(Connection conexion) {
+
+        if (conexion != null) {
+            resultSet = clienteDAO.obtenerNombresClientes(conexion);
+
+            try {
+                cbClientes.removeAllItems();
+
+                while (resultSet.next()) {
+                    // Suponiendo que quieres mostrar el nombre completo del cliente en el comboBox
+                    String clienteNombre = resultSet.getString("Nombre_Completo");
+                    cbClientes.addItem(clienteNombre);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -661,8 +800,8 @@ public class PagosEditar extends javax.swing.JFrame {
     private javax.swing.JMenuItem btnEditar;
     private javax.swing.JMenuItem btnInicio;
     private javax.swing.JButton btnModificar;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> cbClientes;
+    private javax.swing.JComboBox<String> cbPago;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
@@ -698,8 +837,8 @@ public class PagosEditar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
+    private javax.swing.JTextField txtConcepto;
     private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
+    private javax.swing.JTextField txtMonto;
     // End of variables declaration//GEN-END:variables
 }

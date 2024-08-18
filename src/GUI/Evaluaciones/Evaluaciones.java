@@ -9,14 +9,21 @@ import GUI.Clientes.Clientes;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
 import GUI.Pagos.Pagos;
+import GUI.Pagos.PagosEditar;
 import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
+import gymbd.EvaluacionesDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -24,14 +31,19 @@ import javax.swing.Timer;
  */
 public class Evaluaciones extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static EvaluacionesDAO evaluacionesDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+    
     public Evaluaciones() {
         initComponents();
+        dbManager = new DBManager();
+        evaluacionesDAO = new EvaluacionesDAO();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+        obtenerDatosIniciales();
 
     }
 
@@ -333,17 +345,14 @@ public class Evaluaciones extends javax.swing.JFrame {
 
         tableEvaluaciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
-                "ID", "Peso", "Grasa Corporal", "Masa Muscular", "Fecha de Evaluación", "Cliente"
+                "ID", "Peso", "Grasa Corporal", "Masa Muscular", "Fecha de Evaluación", "Id Cliente", "Nombre"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, false
+                false, true, true, true, true, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -486,12 +495,46 @@ public class Evaluaciones extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tableEvaluaciones.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una evaluacion para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idEvaluacionString = tableEvaluaciones.getValueAt(selectedRow, 0).toString();
+        int idEvaluacionInt = Integer.parseInt(idEvaluacionString);
+
+        String idClienteString = tableEvaluaciones.getValueAt(selectedRow, 5).toString();
+        int idClienteInt = Integer.parseInt(idClienteString);
+
         this.dispose();
-        EvaluacionesEditar evaluacionesEditar = new EvaluacionesEditar();
+        EvaluacionesEditar evaluacionesEditar = new EvaluacionesEditar(idEvaluacionInt, idClienteInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        
+        int selectedRow = tableEvaluaciones.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una evaluación para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String id = tableEvaluaciones.getValueAt(selectedRow, 0).toString();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            boolean exito = evaluacionesDAO.eliminarEvaluacion(connection, Integer.parseInt(id));
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Pago eliminado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                refrescarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            dbManager.cerrarConexion(connection);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     public void generarHora() {
@@ -507,6 +550,52 @@ public class Evaluaciones extends javax.swing.JFrame {
             }
         });
         timer.start();
+    }
+    
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            resultSet = evaluacionesDAO.obtenerEvaluaciones(connection);
+
+            try {
+                while (resultSet.next()) {
+
+                    Date fechaPago = resultSet.getTimestamp("fecha_evaluacion");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    String fechaFormateada = sdf.format(fechaPago);
+
+                    modeloTabla.addRow(new Object[]{
+                        resultSet.getString("id_evaluacion"),
+                        resultSet.getString("peso"),
+                        resultSet.getString("grasa_corporal"),
+                        resultSet.getString("masa_muscular"),
+                        fechaFormateada,
+                        resultSet.getString("id_cliente"),
+                        resultSet.getString("Nombre_Cliente"),});
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
+
+    }
+    
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {

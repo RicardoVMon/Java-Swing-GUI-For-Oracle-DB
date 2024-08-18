@@ -27,31 +27,6 @@ public class DBManager {
         }
     }
 
-    public ResultSet ejecutarProcedimiento(Connection conexion, String sql) {
-        try {
-            callableStatement = conexion.prepareCall(sql);
-            callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
-            callableStatement.execute();
-            resultSet = (ResultSet) callableStatement.getObject(1);
-            return resultSet;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public Object ejecutarFuncion(Connection conexion, String sql, int tipoSalida) {
-        try {
-            callableStatement = conexion.prepareCall(sql);
-            callableStatement.registerOutParameter(1, tipoSalida);
-            callableStatement.execute();
-            return callableStatement.getObject(1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public void cerrarConexion(Connection conexion) {
         try {
             if (resultSet != null && !resultSet.isClosed()) {
@@ -81,4 +56,3 @@ public class DBManager {
         }
     }
 }
-
