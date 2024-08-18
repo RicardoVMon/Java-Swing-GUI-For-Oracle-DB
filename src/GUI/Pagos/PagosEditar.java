@@ -650,7 +650,7 @@ public class PagosEditar extends javax.swing.JFrame {
                         txtFecha.getText(),
                         cbPago.getSelectedItem().toString(),
                         txtConcepto.getText(),
-                        idCliente);
+                        cbClientes.getSelectedItem().toString());
 
                 if (resultado) {
                     JOptionPane.showMessageDialog(this, "Pago actualizado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
