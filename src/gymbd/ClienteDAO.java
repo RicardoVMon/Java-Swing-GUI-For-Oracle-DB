@@ -24,6 +24,20 @@ public class ClienteDAO {
             return null;
         }
     }
+    
+    public ResultSet obtenerNombresClientes(Connection conexion) {
+        try {
+            String sql = "{CALL Obtener_Nombres_Clientes(?)}";
+            callableStatement = conexion.prepareCall(sql);
+            callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
+            callableStatement.execute();
+            resultSet = (ResultSet) callableStatement.getObject(1);
+            return resultSet;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // Método para obtener un cliente por ID
     public ResultSet obtenerClientePorID(Connection conexion, int idCliente) {
