@@ -640,10 +640,7 @@ public class PagosEditar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-//                 Convertir el valor de edad a entero
                 int monto = Integer.parseInt(txtMonto.getText());
-
-//                 Ejecuta el procedimiento almacenado
                 boolean resultado = pagosDAO.actualizarPago(connection,
                         idPago,
                         monto,
@@ -677,11 +674,8 @@ public class PagosEditar extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
@@ -694,7 +688,7 @@ public class PagosEditar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-                llenarComboBoxClientes(connection);  // Llena el comboBox de clientes
+                llenarComboBoxClientes(connection);
                 resultSet = pagosDAO.obtenerPagoPorID(connection, idPago);
 
                 if (resultSet != null) {
@@ -704,16 +698,13 @@ public class PagosEditar extends javax.swing.JFrame {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                         String fechaFormateada = sdf.format(fechaPago);
 
-                        // Establece los valores en los campos de texto
                         txtMonto.setText(resultSet.getString("Monto"));
                         txtFecha.setText(fechaFormateada);
                         txtConcepto.setText(resultSet.getString("Concepto"));
 
-                        // Obtener el nombre del cliente desde el ResultSet
                         String nombreCliente = resultSet.getString("Nombre_Cliente");
                         String metodoPago = resultSet.getString("Metodo_Pago");
 
-                        // Seleccionar el cliente en el comboBox
                         for (int i = 0; i < cbClientes.getItemCount(); i++) {
                             if (cbClientes.getItemAt(i).equals(nombreCliente)) {
                                 cbClientes.setSelectedIndex(i);
@@ -721,7 +712,6 @@ public class PagosEditar extends javax.swing.JFrame {
                             }
                         }
 
-                        // Seleccionar el método de pago en el comboBox
                         for (int i = 0; i < cbPago.getItemCount(); i++) {
                             if (cbPago.getItemAt(i).equals(metodoPago)) {
                                 cbPago.setSelectedIndex(i);
@@ -753,7 +743,6 @@ public class PagosEditar extends javax.swing.JFrame {
                 cbClientes.removeAllItems();
 
                 while (resultSet.next()) {
-                    // Suponiendo que quieres mostrar el nombre completo del cliente en el comboBox
                     String clienteNombre = resultSet.getString("Nombre_Completo");
                     cbClientes.addItem(clienteNombre);
                 }

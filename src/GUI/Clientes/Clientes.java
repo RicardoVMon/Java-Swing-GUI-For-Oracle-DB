@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -561,28 +562,26 @@ public class Clientes extends javax.swing.JFrame {
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
 
         int selectedRow = tableClientes.getSelectedRow();
-
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         String id = tableClientes.getValueAt(selectedRow, 0).toString();
-
         connection = dbManager.abrirConexion();
-
-        if (connection != null) {
-            boolean exito = clienteDAO.eliminarCliente(connection, Integer.parseInt(id));
-
-            if (exito) {
-                JOptionPane.showMessageDialog(this, "Usuario desactivado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                refrescarTabla();
-            } else {
-                System.out.println("Error al ejecutar el procedimiento");
-            }
-
-            dbManager.cerrarConexion(connection);
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        boolean exito = clienteDAO.eliminarCliente(connection, Integer.parseInt(id));
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Usuario desactivado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al desactivar el usaurio", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        dbManager.cerrarConexion(connection);
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
@@ -620,27 +619,28 @@ public class Clientes extends javax.swing.JFrame {
 
         connection = dbManager.abrirConexion();
 
-        if (connection != null) {
-            resultSet = clienteDAO.obtenerClientes(connection);
-
-            try {
-                while (resultSet.next()) {
-                    modeloTabla.addRow(new Object[]{
-                        resultSet.getString("id_cliente"),
-                        resultSet.getString("nombre"),
-                        resultSet.getString("apellido_paterno"),
-                        resultSet.getString("apellido_materno"),
-                        resultSet.getString("edad"),
-                        resultSet.getString("email"),
-                        resultSet.getString("telefono"),
-                        resultSet.getString("nombre_membresia")
-                    });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            dbManager.cerrarConexion(connection);
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        
+        resultSet = clienteDAO.obtenerClientes(connection);
+        try {
+            while (resultSet.next()) {
+                modeloTabla.addRow(new Object[]{
+                    resultSet.getString("id_cliente"),
+                    resultSet.getString("nombre"),
+                    resultSet.getString("apellido_paterno"),
+                    resultSet.getString("apellido_materno"),
+                    resultSet.getString("edad"),
+                    resultSet.getString("email"),
+                    resultSet.getString("telefono"),
+                    resultSet.getString("nombre_membresia")
+                });
+            }
+        } catch (SQLException e) {
+        }
+        dbManager.cerrarConexion(connection);
     }
 
     public void limpiarTabla() {
@@ -667,16 +667,24 @@ public class Clientes extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>

@@ -10,10 +10,9 @@ public class EvaluacionesDAO {
     private CallableStatement callableStatement = null;
     private ResultSet resultSet = null;
 
-    // Método para obtener todos los pagos
     public ResultSet obtenerEvaluaciones(Connection conexion) {
         try {
-            String sql = "{CALL Obtener_Evaluaciones(?)}";
+            String sql = "{CALL Paquete_Evaluaciones.Obtener_Evaluaciones(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
@@ -25,10 +24,9 @@ public class EvaluacionesDAO {
         }
     }
 
-    // Método para obtener un pago por ID
     public ResultSet obtenerEvaluacionPorID(Connection conexion, int idEvaluacion) {
         try {
-            String sql = "{CALL Obtener_Evaluacion_Por_ID(?, ?)}";
+            String sql = "{CALL Paquete_Evaluaciones.Obtener_Evaluacion_Por_ID(?, ?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idEvaluacion);
             callableStatement.registerOutParameter(2, OracleTypes.CURSOR);
@@ -41,12 +39,11 @@ public class EvaluacionesDAO {
         }
     }
 
-    // Método para ingresar un cliente
     public boolean ingresarEvalucion(Connection conexion, int peso, int grasa,
             int masa, String fecha, String nombreCliente) {
 
         try {
-            String sql = "{CALL Ingresar_Evaluacion(?, ?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Evaluaciones.Ingresar_Evaluacion(?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, peso);
@@ -62,12 +59,11 @@ public class EvaluacionesDAO {
         }
     }
 
-    // Método para actualizar un cliente
     public boolean actualizarEvaluacion(Connection conexion, int idEvaluacion, int peso, int grasa,
             int masa, String fecha, String nombreCliente) {
 
         try {
-            String sql = "{CALL Actualizar_Evaluacion(?, ?, ?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Evaluaciones.Actualizar_Evaluacion(?, ?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, idEvaluacion);
@@ -84,10 +80,9 @@ public class EvaluacionesDAO {
         }
     }
 
-    // Método para eliminar un cliente
     public boolean eliminarEvaluacion(Connection conexion, int idEvaluacion) {
         try {
-            String sql = "{CALL Eliminar_Evaluacion(?)}";
+            String sql = "{CALL Paquete_Evaluaciones.Eliminar_Evaluacion(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idEvaluacion);
             callableStatement.execute();
