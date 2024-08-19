@@ -1,38 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Inventario;
 
 import GUI.Clases.Clases;
-import GUI.Clientes.Clientes;
 import GUI.Evaluaciones.Evaluaciones;
+import GUI.Clientes.Clientes;
 import GUI.Membresias.Membresias;
 import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
+import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
+import gymbd.InventarioDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Inventario extends javax.swing.JFrame {
-
-    /**
-     * Creates new form Principal
-     */
+    
+    private static DBManager dbManager;
+    private static InventarioDAO inventarioDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+    
     public Inventario() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
-
+        dbManager = new DBManager();
+        connection = dbManager.abrirConexion();  // Asegúrate de inicializar la conexión
+        inventarioDAO = new InventarioDAO(connection);
+        obtenerDatosIniciales();
     }
 
     /**
@@ -69,13 +73,17 @@ public class Inventario extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tableEvaluaciones = new javax.swing.JTable();
+        tableInventario = new javax.swing.JTable();
         btnAgregar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        btnInicio = new javax.swing.JMenuItem();
+        btnAgregar1 = new javax.swing.JMenuItem();
+        btnPantallaEditar = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -310,12 +318,9 @@ public class Inventario extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        tableEvaluaciones.setModel(new javax.swing.table.DefaultTableModel(
+        tableInventario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "Nombre", "Precio", "Descripción", "Existencias", "Proveedor"
@@ -329,7 +334,7 @@ public class Inventario extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(tableEvaluaciones);
+        jScrollPane1.setViewportView(tableInventario);
 
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
@@ -356,17 +361,19 @@ public class Inventario extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(btnAgregar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEditar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEliminar)
-                .addContainerGap(653, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 878, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(btnAgregar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEditar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnEliminar)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap(41, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 878, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16))
         );
         jPanel4Layout.setVerticalGroup(
@@ -379,7 +386,7 @@ public class Inventario extends javax.swing.JFrame {
                     .addComponent(btnEliminar))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Sistema");
@@ -393,6 +400,34 @@ public class Inventario extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Inventario");
+
+        btnInicio.setText("Inicio");
+        btnInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInicioActionPerformed(evt);
+            }
+        });
+        jMenu2.add(btnInicio);
+
+        btnAgregar1.setText("Agregar");
+        btnAgregar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregar1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(btnAgregar1);
+
+        btnPantallaEditar.setText("Editar");
+        btnPantallaEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPantallaEditarActionPerformed(evt);
+            }
+        });
+        jMenu2.add(btnPantallaEditar);
+
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -432,7 +467,7 @@ public class Inventario extends javax.swing.JFrame {
 
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
-        Inventario principal = new Inventario();
+        Principal  principal = new Principal();
         
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
@@ -480,20 +515,64 @@ public class Inventario extends javax.swing.JFrame {
         this.dispose();
         Pedidos pedidos = new Pedidos();
     }//GEN-LAST:event_jbPedidosActionPerformed
-
+    
+    
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         this.dispose();
         InventarioAgregar inventarioAgregar = new InventarioAgregar();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tableInventario.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un producto para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idInventarioString = tableInventario.getValueAt(selectedRow, 0).toString();
+        int idInventarioInt = Integer.parseInt(idInventarioString);
         this.dispose();
-        InventarioEditar inventarioEditar = new InventarioEditar();
+        InventarioEditar inventarioEditar = new InventarioEditar(idInventarioInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = tableInventario.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un producto para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String id = tableInventario.getValueAt(selectedRow, 0).toString();
+        int IdProducto = Integer.parseInt(id);
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            boolean exito = inventarioDAO.eliminarProducto(connection, IdProducto);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Producto eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                refrescarTabla();
+            } else {
+                System.out.println("Error al ejecutar el procedimiento");
+            }
+
+            dbManager.cerrarConexion(connection);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
+        this.dispose();
+        Inventario inventario = new Inventario();
+    }//GEN-LAST:event_btnInicioActionPerformed
+
+    private void btnAgregar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregar1ActionPerformed
+        this.dispose();
+        InventarioAgregar inventarioAgregar = new InventarioAgregar();
+    }//GEN-LAST:event_btnAgregar1ActionPerformed
+
+    private void btnPantallaEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantallaEditarActionPerformed
+
+    }//GEN-LAST:event_btnPantallaEditarActionPerformed
 
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
@@ -509,7 +588,47 @@ public class Inventario extends javax.swing.JFrame {
         });
         timer.start();
     }
+    
+    public void obtenerDatosIniciales() {
 
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableInventario.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            resultSet = inventarioDAO.obtenerProductos(connection);
+
+            try {
+                while (resultSet.next()) {
+                    modeloTabla.addRow(new Object[]{
+                        resultSet.getString("id_producto"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("precio"),
+                        resultSet.getString("descripcion"),
+                        resultSet.getString("existencias"),
+                        resultSet.getString("Nombre_Proveedor")
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableInventario.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -545,8 +664,11 @@ public class Inventario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JMenuItem btnAgregar1;
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JMenuItem btnInicio;
+    private javax.swing.JMenuItem btnPantallaEditar;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -555,6 +677,7 @@ public class Inventario extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -575,6 +698,6 @@ public class Inventario extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
-    private javax.swing.JTable tableEvaluaciones;
+    private javax.swing.JTable tableInventario;
     // End of variables declaration//GEN-END:variables
 }
