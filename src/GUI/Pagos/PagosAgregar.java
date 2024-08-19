@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Pagos;
 
 import GUI.Clases.Clases;
@@ -27,10 +23,6 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author Daniel
- */
 public class PagosAgregar extends javax.swing.JFrame {
 
     private static DBManager dbManager;
@@ -627,15 +619,12 @@ public class PagosAgregar extends javax.swing.JFrame {
     }//GEN-LAST:event_cbClientesActionPerformed
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-        
+
         connection = dbManager.abrirConexion();
 
         if (connection != null) {
             try {
-                // Convertir el valor de edad a entero
                 int monto = Integer.parseInt(txtMonto.getText());
-
-                // Ejecuta el procedimiento almacenado
                 boolean resultado = pagosDAO.ingresarPago(connection,
                         monto,
                         txtFecha.getText(),
@@ -648,7 +637,6 @@ public class PagosAgregar extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Error al ingresar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
             } catch (NumberFormatException e) {
                 System.out.println("Error en la conversión de números: " + e.getMessage());
             } catch (Exception e) {
@@ -668,29 +656,23 @@ public class PagosAgregar extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
     }
-    
+
     public void llenarComboBoxClientesAgregar() {
-        
+
         connection = dbManager.abrirConexion();
-        
         if (connection != null) {
             resultSet = clienteDAO.obtenerNombresClientes(connection);
 
             try {
                 cbClientes.removeAllItems();
-
                 while (resultSet.next()) {
-                    // Suponiendo que quieres mostrar el nombre completo del cliente en el comboBox
                     String clienteNombre = resultSet.getString("Nombre_Completo");
                     cbClientes.addItem(clienteNombre);
                 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Clientes;
 
 import GUI.Clases.Clases;
@@ -24,10 +20,6 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author ricar
- */
 public class ClientesAgregar extends javax.swing.JFrame {
 
     private static DBManager dbManager;
@@ -42,6 +34,7 @@ public class ClientesAgregar extends javax.swing.JFrame {
         dbManager = new DBManager();
         clienteDAO = new ClienteDAO();
         generarHora();
+        llenarComboBoxClientesAgregar();
 
     }
 
@@ -362,8 +355,6 @@ public class ClientesAgregar extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setText("Apellido #2");
 
-        cbMembresia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         btnConfirmar.setText("Confirmar");
         btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -464,7 +455,7 @@ public class ClientesAgregar extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jLabel7)
-                .addContainerGap(400, Short.MAX_VALUE))
+                .addContainerGap(398, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -627,43 +618,38 @@ public class ClientesAgregar extends javax.swing.JFrame {
     }//GEN-LAST:event_txtApellido1ActionPerformed
 
     private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
-        connection = dbManager.abrirConexion();
+        
+        try {
+            connection = dbManager.abrirConexion();
+            if (connection == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        if (connection != null) {
-            try {
-                // Convertir el valor de edad a entero
-                int edad = Integer.parseInt(txtEdad.getText());
+            int edad = Integer.parseInt(txtEdad.getText());
+            boolean resultado = clienteDAO.ingresarCliente(
+                    connection,
+                    txtNombre.getText(),
+                    txtApellido1.getText(),
+                    txtApellido2.getText(),
+                    edad,
+                    txtEmail.getText(),
+                    txtTelefono.getText(),
+                    cbMembresia.getSelectedItem().toString()
+            );
 
-                // Convertir el valor de membresía a Integer, o usar null si está vacío
-//                Integer idMembresia = null;
-//                if (!txtMembresia.getText().isEmpty()) {
-//                    idMembresia = Integer.parseInt(txtMembresia.getText());
-//                }
-                // Ejecuta el procedimiento almacenado
-                boolean resultado = clienteDAO.ingresarCliente(connection,
-                        txtNombre.getText(),
-                        txtApellido1.getText(),
-                        txtApellido2.getText(),
-                        edad,
-                        txtEmail.getText(),
-                        txtTelefono.getText(),
-                        1);
+            String mensaje = resultado ? "Cliente ingresado exitosamente." : "Error al ingresar el cliente.";
+            int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+            JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
 
-                if (resultado) {
-                    JOptionPane.showMessageDialog(this, "Cliente ingresado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al ingresar el cliente.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-
-            } catch (NumberFormatException e) {
-                System.out.println("Error en la conversión de números: " + e.getMessage());
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (connection != null) {
                 dbManager.cerrarConexion(connection);
             }
-        } else {
-            System.out.println("No se pudo establecer la conexión.");
         }
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
@@ -671,15 +657,31 @@ public class ClientesAgregar extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
 
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
+    }
+
+    public void llenarComboBoxClientesAgregar() {
+
+        connection = dbManager.abrirConexion();
+        if (connection != null) {
+            resultSet = clienteDAO.obtenerMembresias(connection);
+            try {
+                cbMembresia.removeAllItems();
+                while (resultSet.next()) {
+                    String clienteNombre = resultSet.getString("Nombre");
+                    cbMembresia.addItem(clienteNombre);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
     }
 
     public static void main(String args[]) {

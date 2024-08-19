@@ -629,12 +629,9 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-//                 Convertir el valor de edad a entero
                 int peso = Integer.parseInt(txtPeso.getText());
                 int grasa = Integer.parseInt(txtGrasa.getText());
                 int masa = Integer.parseInt(txtMasa.getText());
-
-//                 Ejecuta el procedimiento almacenado
                 boolean resultado = evaluacionesDAO.actualizarEvaluacion(connection,
                         idEvaluacion,
                         peso,
@@ -652,7 +649,7 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
             } catch (NumberFormatException e) {
                 System.out.println("Error en la conversión de números: " + e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Ha ocurrido un error: " + e.getMessage());
             } finally {
                 dbManager.cerrarConexion(connection);
             }
@@ -661,18 +658,12 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnModificarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
@@ -685,7 +676,7 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-                llenarComboBoxClientes(connection);  // Llena el comboBox de clientes
+                llenarComboBoxClientes(connection);
                 resultSet = evaluacionesDAO.obtenerEvaluacionPorID(connection, idEvaluacion);
 
                 if (resultSet != null) {
@@ -695,16 +686,13 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                         String fechaFormateada = sdf.format(fechaPago);
 
-                        // Establece los valores en los campos de texto
                         txtPeso.setText(resultSet.getString("peso"));
                         txtGrasa.setText(resultSet.getString("Grasa_corporal"));
                         txtMasa.setText(resultSet.getString("masa_muscular"));
                         txtFecha.setText(fechaFormateada);
 
-                        // Obtener el nombre del cliente desde el ResultSet
                         String nombreCliente = resultSet.getString("Nombre_Cliente");
 
-                        // Seleccionar el cliente en el comboBox
                         for (int i = 0; i < cbClientes.getItemCount(); i++) {
                             if (cbClientes.getItemAt(i).equals(nombreCliente)) {
                                 cbClientes.setSelectedIndex(i);
@@ -737,7 +725,6 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                 cbClientes.removeAllItems();
 
                 while (resultSet.next()) {
-                    // Suponiendo que quieres mostrar el nombre completo del cliente en el comboBox
                     String clienteNombre = resultSet.getString("Nombre_Completo");
                     cbClientes.addItem(clienteNombre);
                 }

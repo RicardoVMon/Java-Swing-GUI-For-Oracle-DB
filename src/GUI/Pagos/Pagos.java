@@ -21,10 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Pagos extends javax.swing.JFrame {
 
     private static DBManager dbManager;
@@ -533,11 +529,8 @@ public class Pagos extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
@@ -557,7 +550,6 @@ public class Pagos extends javax.swing.JFrame {
                 while (resultSet.next()) {
 
                     Date fechaPago = resultSet.getTimestamp("fecha_pago");
-                    // Formatear la fecha a "yyyy-MM-dd"
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                     String fechaFormateada = sdf.format(fechaPago);
 
