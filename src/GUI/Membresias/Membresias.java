@@ -1,38 +1,43 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Membresias;
 
 import GUI.Clases.Clases;
-import GUI.Clientes.Clientes;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
+import GUI.Clientes.Clientes;
 import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.MembresiaDAO;
+import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
+
 public class Membresias extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+
+    private static DBManager dbManager;
+    private static MembresiaDAO membresiaDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public Membresias() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+        dbManager = new DBManager();
+        membresiaDAO = new MembresiaDAO();
+        obtenerDatosIniciales();
     }
 
     /**
@@ -267,13 +272,14 @@ public class Membresias extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(422, 422, 422)
-                .addComponent(jHora)
-                .addContainerGap(474, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(396, 396, 396))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(422, 422, 422)
+                        .addComponent(jHora))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(373, 373, 373)
+                        .addComponent(jLabel1)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,10 +338,7 @@ public class Membresias extends javax.swing.JFrame {
 
         tableMembresias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ID", "Nombre", "Precio", "Duración"
@@ -377,7 +380,7 @@ public class Membresias extends javax.swing.JFrame {
                     .addComponent(btnEliminar))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Sistema");
@@ -485,12 +488,42 @@ public class Membresias extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tableMembresias.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una membresía para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idMemString = tableMembresias.getValueAt(selectedRow, 0).toString();
+        int idMemInt = Integer.parseInt(idMemString);
         this.dispose();
-        MembresiasEditar membresiasEditar = new MembresiasEditar();
+        MembresiasEditar membresiasEditar = new MembresiasEditar(idMemInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = tableMembresias.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una membresía para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String id = tableMembresias.getValueAt(selectedRow, 0).toString();
+        int IdMembresia = Integer.parseInt(id);
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            boolean exito = membresiaDAO.eliminarMembresia(connection, IdMembresia);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Membresía desactivada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                refrescarTabla();
+            } else {
+                System.out.println("Error al ejecutar el procedimiento");
+            }
+
+            dbManager.cerrarConexion(connection);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     public void generarHora() {
@@ -506,6 +539,46 @@ public class Membresias extends javax.swing.JFrame {
             }
         });
         timer.start();
+    }
+    
+     
+    
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableMembresias.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            resultSet = membresiaDAO.obtenerMembresias(connection);
+
+            try {
+                while (resultSet.next()) {
+                    modeloTabla.addRow(new Object[]{
+                        resultSet.getString("id_membresia"),
+                        resultSet.getString("nombre"),
+                        resultSet.getString("precio"),
+                        resultSet.getString("duracion")
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableMembresias.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {
