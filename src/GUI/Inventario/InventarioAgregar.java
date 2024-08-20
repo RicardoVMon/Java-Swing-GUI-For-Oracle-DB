@@ -636,10 +636,8 @@ public class InventarioAgregar extends javax.swing.JFrame {
                 double precio = Double.parseDouble(txtPrecio.getText());
                 int existencias = Integer.parseInt(txtExistencias.getText());
 
-                // Obtener el ID del proveedor seleccionado en el dropdown list
                 String proveedor = cbProveedor.getSelectedItem().toString();
 
-                // Ejecuta el procedimiento almacenado
                 boolean resultado = inventarioDAO.crearProducto(connection,
                         txtNombre.getText(),
                         precio,
@@ -647,16 +645,14 @@ public class InventarioAgregar extends javax.swing.JFrame {
                         existencias,
                         proveedor);
 
-                if (resultado) {
-                    JOptionPane.showMessageDialog(this, "Producto ingresado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al ingresar el producto.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                String mensaje = resultado ? "Producto registrado en el inventario exitosamente." : "Error al registrar el producto.";
+                int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+                JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
 
             } catch (NumberFormatException e) {
-                System.out.println("Error en la conversión de números: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } finally {
                 dbManager.cerrarConexion(connection);
             }

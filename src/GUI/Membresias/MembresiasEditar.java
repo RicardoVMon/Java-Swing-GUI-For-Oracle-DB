@@ -579,16 +579,14 @@ public class MembresiasEditar extends javax.swing.JFrame {
                         precio,
                         duracion);
 
-                if (resultado) {
-                    JOptionPane.showMessageDialog(this, "Membresía actualizada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar la membresía.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                String mensaje = resultado ? "Membresia editada exitosamente." : "Error al editar la membresia.";
+                int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+                JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
 
             } catch (NumberFormatException e) {
-                System.out.println("Error en la conversión de números: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } finally {
                 dbManager.cerrarConexion(connection);
             }

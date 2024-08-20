@@ -67,13 +67,9 @@ public class InventarioDAO {
             //System.out.println("Producto creado con éxito.");
             return true;
 
-        } catch (SQLException e) {
-        if (e.getErrorCode() == 20001) {
-            JOptionPane.showMessageDialog(null, "Ya existe en el inventario un producto con el nombre dado", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        return false;
+            return false;
         }
     }
 
@@ -93,13 +89,9 @@ public class InventarioDAO {
             callableStatement.execute();
             return true;
 
-        } catch (SQLException e) {
-        if (e.getErrorCode() == 20001) {
-            JOptionPane.showMessageDialog(null, "Ya existe en el inventario un producto con el nombre dado", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        return false;
+            return false;
         }
     }
 

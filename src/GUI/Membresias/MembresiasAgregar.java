@@ -559,28 +559,23 @@ public class MembresiasAgregar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-                // Convertir el valor de precio a double
                 double precio = Double.parseDouble(txtPrecio.getText());
 
-                // Convertir el valor de duración a entero
                 int duracion = Integer.parseInt(txtDuracion.getText());
 
-                // Ejecuta el procedimiento almacenado para ingresar la membresía
                 boolean resultado = membresiaDAO.crearMembresia(connection,
                         txtNombre.getText(),
                         precio,
                         duracion);
 
-                if (resultado) {
-                    JOptionPane.showMessageDialog(this, "Membresía ingresada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al ingresar la membresía.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                String mensaje = resultado ? "Membresia registrada exitosamente." : "Error al registrar la membresia.";
+                int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+                JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
 
             } catch (NumberFormatException e) {
-                System.out.println("Error en la conversión de números: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } finally {
                 dbManager.cerrarConexion(connection);
             }
@@ -603,7 +598,7 @@ public class MembresiasAgregar extends javax.swing.JFrame {
         });
         timer.start();
     }
-    
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

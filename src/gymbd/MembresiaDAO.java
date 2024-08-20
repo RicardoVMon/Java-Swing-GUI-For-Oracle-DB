@@ -63,14 +63,8 @@ public class MembresiaDAO {
             //System.out.println("Membresía creada con éxito.");
             return true;
 
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 20001) {
-                JOptionPane.showMessageDialog(null, "Ya existe una membresía con el nombre dado", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (e.getErrorCode() == 20002) {
-                JOptionPane.showMessageDialog(null, "El precio de la membresía no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -89,14 +83,8 @@ public class MembresiaDAO {
             callableStatement.execute();
             return true;
 
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 20001) {
-                JOptionPane.showMessageDialog(null, "Ya existe una membresía con el nombre dado", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (e.getErrorCode() == 20002) {
-                JOptionPane.showMessageDialog(null, "El precio de la membresía no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
