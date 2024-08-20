@@ -29,7 +29,7 @@ public class ClasesDAO {
         }
     }
 
-    /*public ResultSet obtenerNombresEntrenadores(Connection conexion) {
+    public ResultSet obtenerNombresEntrenadores(Connection conexion) {
         try {
             String sql = "{CALL Paquete_Clases.Obtener_Nombres_Entrenadores(?)}";
             callableStatement = conexion.prepareCall(sql);
@@ -41,7 +41,7 @@ public class ClasesDAO {
             e.printStackTrace();
             return null;
         }
-    }*/
+    }
 
    
 
