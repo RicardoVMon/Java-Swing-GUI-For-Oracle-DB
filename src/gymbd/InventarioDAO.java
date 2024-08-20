@@ -64,7 +64,7 @@ public class InventarioDAO {
             callableStatement.setString(5, nombreProveedor);
 
             callableStatement.execute();
-            System.out.println("Producto creado con éxito.");
+            //System.out.println("Producto creado con éxito.");
             return true;
 
         } catch (SQLException e) {

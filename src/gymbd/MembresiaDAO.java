@@ -16,9 +16,6 @@ public class MembresiaDAO {
     private ResultSet resultSet = null;
     private Connection connection;
     
-//    public MembresiaDAO(Connection connection) {
-//        this.connection = connection;
-//    }
 
     // Leer 
     public ResultSet obtenerMembresias(Connection conexion) {
@@ -63,7 +60,7 @@ public class MembresiaDAO {
 
             callableStatement.execute();
             
-            System.out.println("Membresía creada con éxito.");
+            //System.out.println("Membresía creada con éxito.");
             return true;
 
         } catch (SQLException e) {

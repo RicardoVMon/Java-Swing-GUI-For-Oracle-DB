@@ -145,23 +145,7 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE(' *Se ha producido un error:' || VCOD || ' ' ||  VMENS||'* ');
 END;
 
---trigger para verificar que los nombres de productos no se repitan
-CREATE OR REPLACE TRIGGER TRG_PRODUCTO_NOMBRE
-BEFORE INSERT OR UPDATE ON PRODUCTOS
-FOR EACH ROW
-DECLARE
-    CANT NUMBER;
-BEGIN
-    SELECT COUNT(*)
-    INTO CANT
-    FROM PRODUCTOS
-    WHERE NOMBRE = :NEW.NOMBRE AND ID_PRODUCTO != :NEW.ID_PRODUCTO;
 
-    IF CANT > 0 THEN
-        DBMS_OUTPUT.PUT_LINE(' *Ya existe en el inventario un producto con el nombre dado* ');
-        RAISE_APPLICATION_ERROR(-20001, 'Ya existe en el inventario un producto con el nombre dado');
-    END IF;
-END;
 
 
 
@@ -296,37 +280,5 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE(' *Se ha producido un error al eliminar la membresía: ' || VCOD || ' ' || VMENS || '* ');
 END;
 
---exec SP_Eliminar_Membresias(x);
+--exec SP_Eliminar_Membresias(21);
 
---triggers
-
---tgr para que no repita nombre
-CREATE OR REPLACE TRIGGER TRG_MEMBRESIA_NOMBRE
-BEFORE INSERT OR UPDATE ON MEMBRESIAS
-FOR EACH ROW
-DECLARE
-    CANT NUMBER;
-BEGIN
-    SELECT COUNT(*)
-    INTO CANT
-    FROM MEMBRESIAS
-    WHERE NOMBRE = :NEW.NOMBRE AND ID_MEMBRESIA != :NEW.ID_MEMBRESIA;
-
-    IF CANT > 0 THEN
-        DBMS_OUTPUT.PUT_LINE(' *Ya existe una membresía con el nombre dado* ');
-        RAISE_APPLICATION_ERROR(-20001, 'Ya existe una membresía con el nombre dado');
-    END IF;
-END;
-
-
-
---tgr para cuando precio es menor a 0
-CREATE OR REPLACE TRIGGER TRG_MEMBRESIA_PRECIO
-BEFORE INSERT OR UPDATE ON MEMBRESIAS
-FOR EACH ROW
-BEGIN
-    IF :NEW.PRECIO < 0 THEN
-        DBMS_OUTPUT.PUT_LINE(' *El precio de la membresía no puede ser negativo* ');
-        RAISE_APPLICATION_ERROR(-20002, 'El precio de la membresía no puede ser negativo');
-    END IF;
-END;
