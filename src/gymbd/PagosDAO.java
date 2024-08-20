@@ -10,10 +10,9 @@ public class PagosDAO {
     private CallableStatement callableStatement = null;
     private ResultSet resultSet = null;
 
-    // Método para obtener todos los pagos
     public ResultSet obtenerPagos(Connection conexion) {
         try {
-            String sql = "{CALL Obtener_Pagos(?)}";
+            String sql = "{CALL Paquete_Pagos.Obtener_Pagos(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
@@ -25,10 +24,9 @@ public class PagosDAO {
         }
     }
 
-    // Método para obtener un pago por ID
     public ResultSet obtenerPagoPorID(Connection conexion, int idPago) {
         try {
-            String sql = "{CALL Obtener_Pago_Por_ID(?, ?)}";
+            String sql = "{CALL Paquete_Pagos.Obtener_Pago_Por_ID(?, ?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idPago);
             callableStatement.registerOutParameter(2, OracleTypes.CURSOR);
@@ -41,12 +39,11 @@ public class PagosDAO {
         }
     }
 
-    // Método para ingresar un cliente
     public boolean ingresarPago(Connection conexion, int monto, String fecha,
             String metodo, String concepto, String nombreCliente) {
 
         try {
-            String sql = "{CALL Ingresar_Pago(?, ?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Pagos.Ingresar_Pago(?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, monto);
@@ -62,12 +59,11 @@ public class PagosDAO {
         }
     }
 
-    // Método para actualizar un cliente
     public boolean actualizarPago(Connection conexion, int idPago, int monto, String fecha,
             String metodo, String concepto, String nombreCliente) {
 
         try {
-            String sql = "{CALL Actualizar_Pago(?, ?, ?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Pagos.Actualizar_Pago(?, ?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, idPago);
@@ -84,10 +80,9 @@ public class PagosDAO {
         }
     }
 
-    // Método para eliminar un cliente
     public boolean eliminarPago(Connection conexion, int idPago) {
         try {
-            String sql = "{CALL Eliminar_Pago(?)}";
+            String sql = "{CALL Paquete_Pagos.Eliminar_Pago(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idPago);
             callableStatement.execute();

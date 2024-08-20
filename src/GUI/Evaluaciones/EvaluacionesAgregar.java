@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package GUI.Evaluaciones;
 
 import GUI.Clases.Clases;
@@ -27,10 +24,6 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author Daniel
- */
 public class EvaluacionesAgregar extends javax.swing.JFrame {
 
     private static DBManager dbManager;
@@ -618,12 +611,10 @@ public class EvaluacionesAgregar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-                // Convertir el valor de edad a entero
                 int peso = Integer.parseInt(txtPeso.getText());
                 int grasa = Integer.parseInt(txtGrasa.getText());
                 int masa = Integer.parseInt(txtGrasa.getText());
 
-                // Ejecuta el procedimiento almacenado
                 boolean resultado = evaluacionesDAO.ingresarEvalucion(connection,
                         peso,
                         grasa,
@@ -632,7 +623,7 @@ public class EvaluacionesAgregar extends javax.swing.JFrame {
                         cbClientes.getSelectedItem().toString());
 
                 if (resultado) {
-                    JOptionPane.showMessageDialog(this, "Evaluaciuon ingresada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Evaluacion ingresada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Error al ingresar la evaluacion.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -649,18 +640,13 @@ public class EvaluacionesAgregar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnConfirmarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
 
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
@@ -678,7 +664,6 @@ public class EvaluacionesAgregar extends javax.swing.JFrame {
                 cbClientes.removeAllItems();
 
                 while (resultSet.next()) {
-                    // Suponiendo que quieres mostrar el nombre completo del cliente en el comboBox
                     String clienteNombre = resultSet.getString("Nombre_Completo");
                     cbClientes.addItem(clienteNombre);
                 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Clientes;
 
 import GUI.Clases.Clases;
@@ -19,15 +15,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author ricar
- */
 public class ClientesEditar extends javax.swing.JFrame {
 
     private int idUsuario;
@@ -54,6 +47,7 @@ public class ClientesEditar extends javax.swing.JFrame {
         generarHora();
         this.idUsuario = idUsuario;
         obtenerDatosUsuario();
+
     }
 
     /**
@@ -649,25 +643,16 @@ public class ClientesEditar extends javax.swing.JFrame {
 
         if (connection != null) {
             try {
-                // Convertir el valor de edad a entero
                 int edad = Integer.parseInt(txtEdad.getText());
-
-                // Convertir el valor de membresía a Integer, o usar null si está vacío
-//                Integer idMembresia = null;
-//                if (!txtMembresia.getText().isEmpty()) {
-//                    idMembresia = Integer.parseInt(txtMembresia.getText());
-//                }
-
-                // Ejecuta el procedimiento almacenado
                 boolean resultado = clienteDAO.actualizarCliente(connection,
                         idUsuario,
                         txtNombre.getText(),
                         txtApellido1.getText(),
-                        txtApellido2.getText(), // Asegúrate de tener este campo
+                        txtApellido2.getText(),
                         edad,
                         txtEmail.getText(),
                         txtTelefono.getText(),
-                        1);
+                        cbMembresia.getSelectedItem().toString());
 
                 if (resultado) {
                     JOptionPane.showMessageDialog(this, "Cliente actualizado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
@@ -691,11 +676,8 @@ public class ClientesEditar extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
@@ -705,37 +687,58 @@ public class ClientesEditar extends javax.swing.JFrame {
     public void obtenerDatosUsuario() {
         connection = dbManager.abrirConexion();
 
-        if (connection != null) {
-            try {
-                // Ejecuta el procedimiento almacenado
-                resultSet = clienteDAO.obtenerClientePorID(connection, idUsuario);
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            llenarComboBoxMembresias(connection);
+            resultSet = clienteDAO.obtenerClientePorID(connection, idUsuario);
 
-                // Verifica si el ResultSet no es nulo
-                if (resultSet != null) {
-                    // Verifica si hay filas en el ResultSet
-                    if (resultSet.next()) {
-                        // Establece los valores en los campos de texto
-                        txtNombre.setText(resultSet.getString("NOMBRE"));
-                        txtApellido1.setText(resultSet.getString("APELLIDO_PATERNO"));
-                        txtApellido2.setText(resultSet.getString("APELLIDO_MATERNO"));
-                        txtEdad.setText(resultSet.getString("EDAD"));
-                        txtEmail.setText(resultSet.getString("EMAIL"));
-                        txtTelefono.setText(resultSet.getString("TELEFONO"));
-                        // Si también necesitas el nombre de la membresía
-                        // txtNombreMembresia.setText(resultSet.getString("Nombre_Membresia"));
-                    } else {
-                        System.out.println("No se encontraron datos para el ID de cliente proporcionado.");
-                    }
-                } else {
-                    System.out.println("ResultSet es nulo.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                dbManager.cerrarConexion(connection);
+            if (resultSet == null) {
+                JOptionPane.showMessageDialog(this, "El resultset es nulo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } else {
-            System.out.println("No se pudo establecer la conexión.");
+
+            if (resultSet.next()) {
+                txtNombre.setText(resultSet.getString("NOMBRE"));
+                txtApellido1.setText(resultSet.getString("APELLIDO_PATERNO"));
+                txtApellido2.setText(resultSet.getString("APELLIDO_MATERNO"));
+                txtEdad.setText(resultSet.getString("EDAD"));
+                txtEmail.setText(resultSet.getString("EMAIL"));
+                txtTelefono.setText(resultSet.getString("TELEFONO"));
+
+                for (int i = 0; i < cbMembresia.getItemCount(); i++) {
+                    if (cbMembresia.getItemAt(i).equals(resultSet.getString("Nombre_Membresia"))) {
+                        cbMembresia.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al encontrar datos para el cliente seleccionado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+        } finally {
+            dbManager.cerrarConexion(connection);
+        }
+    }
+
+    public void llenarComboBoxMembresias(Connection conexion) {
+
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        resultSet = clienteDAO.obtenerMembresias(conexion);
+        try {
+            cbMembresia.removeAllItems();
+            while (resultSet.next()) {
+                String nombreMembresia = resultSet.getString("Nombre");
+                cbMembresia.addItem(nombreMembresia);
+            }
+        } catch (SQLException e) {
         }
     }
 

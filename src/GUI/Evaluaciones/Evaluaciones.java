@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Evaluaciones;
 
 import GUI.Clases.Clases;
@@ -25,17 +21,13 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Evaluaciones extends javax.swing.JFrame {
 
     private static DBManager dbManager;
     private static EvaluacionesDAO evaluacionesDAO;
     private static Connection connection;
     private static ResultSet resultSet;
-    
+
     public Evaluaciones() {
         initComponents();
         dbManager = new DBManager();
@@ -441,7 +433,7 @@ public class Evaluaciones extends javax.swing.JFrame {
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
         Evaluaciones principal = new Evaluaciones();
-        
+
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
@@ -455,8 +447,8 @@ public class Evaluaciones extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPagosActionPerformed
 
     private void jbEvaluacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEvaluacionesActionPerformed
-       this.dispose();
-       Evaluaciones evaluaciones = new Evaluaciones();
+        this.dispose();
+        Evaluaciones evaluaciones = new Evaluaciones();
     }//GEN-LAST:event_jbEvaluacionesActionPerformed
 
     private void jbMembresiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMembresiasActionPerformed
@@ -505,34 +497,27 @@ public class Evaluaciones extends javax.swing.JFrame {
 
         String idClienteString = tableEvaluaciones.getValueAt(selectedRow, 5).toString();
         int idClienteInt = Integer.parseInt(idClienteString);
-
         this.dispose();
         EvaluacionesEditar evaluacionesEditar = new EvaluacionesEditar(idEvaluacionInt, idClienteInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        
-        int selectedRow = tableEvaluaciones.getSelectedRow();
 
+        int selectedRow = tableEvaluaciones.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona una evaluación para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         String id = tableEvaluaciones.getValueAt(selectedRow, 0).toString();
-
         connection = dbManager.abrirConexion();
-
         if (connection != null) {
             boolean exito = evaluacionesDAO.eliminarEvaluacion(connection, Integer.parseInt(id));
-
             if (exito) {
-                JOptionPane.showMessageDialog(this, "Pago eliminado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Evaluacion eliminada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 refrescarTabla();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar la evaluacion.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
             dbManager.cerrarConexion(connection);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
@@ -541,26 +526,19 @@ public class Evaluaciones extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
     }
-    
+
     public void obtenerDatosIniciales() {
-
         DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
-
         connection = dbManager.abrirConexion();
-
         if (connection != null) {
             resultSet = evaluacionesDAO.obtenerEvaluaciones(connection);
-
             try {
                 while (resultSet.next()) {
 
@@ -582,9 +560,8 @@ public class Evaluaciones extends javax.swing.JFrame {
             }
             dbManager.cerrarConexion(connection);
         }
-
     }
-    
+
     public void limpiarTabla() {
         DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
         int cantidadFilas = modeloTabla.getRowCount();
