@@ -23,7 +23,7 @@ public class InventarioDAO {
     //leer
     public ResultSet obtenerProductos(Connection conexion) {
         try {
-            String sql = "{CALL SP_Visualizar_Productos(?)}";
+            String sql = "{CALL Paquete_Inventario.SP_Visualizar_Productos(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
@@ -38,7 +38,7 @@ public class InventarioDAO {
     //leer producto por ID
     public ResultSet obtenerProductoPorID(Connection conexion, int idProducto) {
         try {
-            String sql = "{CALL SP_Visualizar_Productos_ID(?, ?)}";
+            String sql = "{CALL Paquete_Inventario.SP_Visualizar_Productos_ID(?, ?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idProducto);
             callableStatement.registerOutParameter(2, OracleTypes.CURSOR);
@@ -54,7 +54,7 @@ public class InventarioDAO {
     //crear
     public boolean crearProducto(Connection conexion, String nombre, double precio, String descripcion, int existencias, String nombreProveedor) {
         try {
-            String sql = "{call SP_Crear_Productos(?, ?, ?, ?, ?)}";
+            String sql = "{call Paquete_Inventario.SP_Crear_Productos(?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setString(1, nombre);
@@ -80,7 +80,7 @@ public class InventarioDAO {
     //editar
     public boolean actualizarProducto(Connection conexion, int idProducto, String nombre, double precio, String descripcion, int existencias, String nombreProveedor) {
         try {
-            String sql = "{CALL SP_Editar_Productos(?, ?, ?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Inventario.SP_Editar_Productos(?, ?, ?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, idProducto);
@@ -106,7 +106,7 @@ public class InventarioDAO {
     //eliminar/desactivar
     public boolean eliminarProducto(Connection conexion, int idProducto) {
         try {
-            String sql = "{CALL SP_Eliminar_Productos(?)}";
+            String sql = "{CALL Paquete_Inventario.SP_Eliminar_Productos(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idProducto);
             callableStatement.execute();
@@ -120,7 +120,7 @@ public class InventarioDAO {
     //metodo para los nombres de proveedores para dropdown list
     public ResultSet obtenerNombresProveedores(Connection conexion) {
         try {
-            String sql = "{CALL SP_Obtener_Nombres_Proveedores(?)}";
+            String sql = "{CALL Paquete_Inventario.SP_Obtener_Nombres_Proveedores(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();

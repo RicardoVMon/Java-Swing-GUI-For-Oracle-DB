@@ -20,7 +20,7 @@ public class MembresiaDAO {
     // Leer 
     public ResultSet obtenerMembresias(Connection conexion) {
         try {
-            String sql = "{CALL SP_Visualizar_Membresias(?)}";
+            String sql = "{CALL Paquete_Membresias.SP_Visualizar_Membresias(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
             callableStatement.execute();
@@ -35,7 +35,7 @@ public class MembresiaDAO {
     // Leer  por ID
     public ResultSet obtenerMembresiaPorID(Connection conexion, int idMembresia) {
         try {
-            String sql = "{CALL SP_Visualizar_Membresias_ID(?, ?)}";
+            String sql = "{CALL Paquete_Membresias.SP_Visualizar_Membresias_ID(?, ?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idMembresia);
             callableStatement.registerOutParameter(2, OracleTypes.CURSOR);
@@ -51,7 +51,7 @@ public class MembresiaDAO {
     // Crear membresia
     public boolean crearMembresia(Connection conexion, String nombre, double precio, int duracion) {
         try {
-            String sql = "{call SP_Crear_Membresias(?, ?, ?)}";
+            String sql = "{call Paquete_Membresias.SP_Crear_Membresias(?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setString(1, nombre);
@@ -78,7 +78,7 @@ public class MembresiaDAO {
     // editar 
     public boolean actualizarMembresia(Connection conexion, int idMembresia, String nombre, double precio, int duracion) {
         try {
-            String sql = "{CALL SP_Editar_Membresias(?, ?, ?, ?)}";
+            String sql = "{CALL Paquete_Membresias.SP_Editar_Membresias(?, ?, ?, ?)}";
             callableStatement = conexion.prepareCall(sql);
 
             callableStatement.setInt(1, idMembresia);
@@ -104,7 +104,7 @@ public class MembresiaDAO {
     //eliminar/desactivar 
     public boolean eliminarMembresia(Connection conexion, int idMembresia) {
         try {
-            String sql = "{CALL SP_Eliminar_Membresias(?)}";
+            String sql = "{CALL Paquete_Membresias.SP_Eliminar_Membresias(?)}";
             callableStatement = conexion.prepareCall(sql);
             callableStatement.setInt(1, idMembresia);
             callableStatement.execute();

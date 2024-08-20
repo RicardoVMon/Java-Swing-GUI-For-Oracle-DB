@@ -280,5 +280,4 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE(' *Se ha producido un error al eliminar la membresía: ' || VCOD || ' ' || VMENS || '* ');
 END;
 
---exec SP_Eliminar_Membresias(21);
 
