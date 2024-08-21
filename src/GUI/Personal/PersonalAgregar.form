@@ -529,24 +529,24 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="txtNombre1" alignment="0" min="-2" pref="474" max="-2" attributes="0"/>
+                                  <Component id="txtNombre" alignment="0" min="-2" pref="474" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace pref="44" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="txtFecha" alignment="0" min="-2" pref="368" max="-2" attributes="0"/>
+                                  <Component id="txtApellido1" alignment="0" min="-2" pref="368" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="txtNombre2" alignment="0" min="-2" pref="474" max="-2" attributes="0"/>
+                                  <Component id="txtApellido2" alignment="0" min="-2" pref="474" max="-2" attributes="0"/>
                                   <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="txtNombre3" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtEspecialidad" alignment="0" max="32767" attributes="0"/>
                                   <Component id="btnConfirmar" alignment="0" pref="372" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
@@ -565,8 +565,8 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="txtFecha" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
-                          <Component id="txtNombre1" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="txtApellido1" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="txtNombre" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
@@ -581,8 +581,8 @@
                           </Group>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtNombre2" alignment="1" min="-2" pref="49" max="-2" attributes="0"/>
-                          <Component id="txtNombre3" alignment="1" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="txtApellido2" alignment="1" min="-2" pref="49" max="-2" attributes="0"/>
+                          <Component id="txtEspecialidad" alignment="1" min="-2" pref="49" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                       <Component id="btnConfirmar" min="-2" pref="44" max="-2" attributes="0"/>
@@ -608,16 +608,16 @@
                 <Property name="text" type="java.lang.String" value="Apellido #1"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtFecha">
+            <Component class="javax.swing.JTextField" name="txtApellido1">
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtFechaActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtApellido1ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNombre1">
+            <Component class="javax.swing.JTextField" name="txtNombre">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNombre2">
+            <Component class="javax.swing.JTextField" name="txtApellido2">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNombre3">
+            <Component class="javax.swing.JTextField" name="txtEspecialidad">
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel14">
               <Properties>
@@ -639,6 +639,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Confirmar"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfirmarActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

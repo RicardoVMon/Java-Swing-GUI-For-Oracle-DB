@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package GUI.Clientes;
 
 import GUI.Clases.Clases;
@@ -26,10 +23,6 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Clientes extends javax.swing.JFrame {
 
     private static DBManager dbManager;

@@ -5,6 +5,7 @@
 package GUI.Clases;
 
 import GUI.Clientes.Clientes;
+import GUI.Clientes.ClientesEditar;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
@@ -13,26 +14,34 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClasesDAO;
+import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Clases extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static ClasesDAO clasesDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public Clases() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        dbManager = new DBManager();
+        clasesDAO = new ClasesDAO();
         generarHora();
+        obtenerDatosIniciales();
 
     }
 
@@ -331,10 +340,7 @@ public class Clases extends javax.swing.JFrame {
 
         tableClases.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "Nombre", "Descripción", "Capacidad", "Horario", "Entrenador"
@@ -430,7 +436,7 @@ public class Clases extends javax.swing.JFrame {
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
         Principal principal = new Principal();
-        
+
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
@@ -444,8 +450,8 @@ public class Clases extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPagosActionPerformed
 
     private void jbEvaluacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEvaluacionesActionPerformed
-       this.dispose();
-       Evaluaciones evaluaciones = new Evaluaciones();
+        this.dispose();
+        Evaluaciones evaluaciones = new Evaluaciones();
     }//GEN-LAST:event_jbEvaluacionesActionPerformed
 
     private void jbMembresiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMembresiasActionPerformed
@@ -484,12 +490,41 @@ public class Clases extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tableClases.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una clase para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idClaseString = tableClases.getValueAt(selectedRow, 0).toString();
+        int idClaseInt = Integer.parseInt(idClaseString);
         this.dispose();
-        ClasesEditar clasesEditar = new ClasesEditar();
+        ClasesEditar clasesEditar = new ClasesEditar(idClaseInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+
+        int selectedRow = tableClases.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una clase para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String id = tableClases.getValueAt(selectedRow, 0).toString();
+        connection = dbManager.abrirConexion();
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean exito = clasesDAO.eliminarClase(connection, Integer.parseInt(id));
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Clase desactivada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al desactivar la clase", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        dbManager.cerrarConexion(connection);
+
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     public void generarHora() {
@@ -539,6 +574,48 @@ public class Clases extends javax.swing.JFrame {
             }
         });
     }
+
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableClases.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        resultSet = clasesDAO.obtenerClases(connection);
+        try {
+            while (resultSet.next()) {
+                modeloTabla.addRow(new Object[]{
+                    resultSet.getString("id_clase"),
+                    resultSet.getString("nombre"),
+                    resultSet.getString("descripcion"),
+                    resultSet.getString("capacidad"),
+                    resultSet.getString("horario"),
+                    resultSet.getString("nombre_completo")
+                });
+            }
+        } catch (SQLException e) {
+        }
+        dbManager.cerrarConexion(connection);
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableClases.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;

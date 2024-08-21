@@ -1,11 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Personal;
 
 import GUI.Clases.Clases;
 import GUI.Clientes.Clientes;
+import GUI.Clientes.ClientesEditar;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
@@ -13,26 +10,34 @@ import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
+import gymbd.PersonalDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Personal extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static PersonalDAO personalDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public Personal() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        dbManager = new DBManager();
+        personalDAO = new PersonalDAO();
         generarHora();
+        obtenerDatosIniciales();
 
     }
 
@@ -320,17 +325,14 @@ public class Personal extends javax.swing.JFrame {
 
         tablePersonal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
-                "ID", "Nombre", "Especialidad"
+                "ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Especialidad"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true
+                false, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -433,7 +435,7 @@ public class Personal extends javax.swing.JFrame {
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
         Principal principal = new Principal();
-        
+
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
@@ -447,8 +449,8 @@ public class Personal extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPagosActionPerformed
 
     private void jbEvaluacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEvaluacionesActionPerformed
-       this.dispose();
-       Evaluaciones evaluaciones = new Evaluaciones();
+        this.dispose();
+        Evaluaciones evaluaciones = new Evaluaciones();
     }//GEN-LAST:event_jbEvaluacionesActionPerformed
 
     private void jbMembresiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMembresiasActionPerformed
@@ -487,12 +489,40 @@ public class Personal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tablePersonal.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un entrenador para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idPersonalString = tablePersonal.getValueAt(selectedRow, 0).toString();
+        int idPersonalInt = Integer.parseInt(idPersonalString);
         this.dispose();
-        PersonalEditar personalEditar = new PersonalEditar();
+        PersonalEditar personalEditar = new PersonalEditar(idPersonalInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+
+        int selectedRow = tablePersonal.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un entrenador para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String id = tablePersonal.getValueAt(selectedRow, 0).toString();
+        connection = dbManager.abrirConexion();
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean exito = personalDAO.eliminarPersonal(connection, Integer.parseInt(id));
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Entrenador desactivado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al desactivar el entrenador", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        dbManager.cerrarConexion(connection);
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     public void generarHora() {
@@ -508,6 +538,45 @@ public class Personal extends javax.swing.JFrame {
             }
         });
         timer.start();
+    }
+
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablePersonal.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        resultSet = personalDAO.obtenerPersonal(connection);
+        try {
+            while (resultSet.next()) {
+                modeloTabla.addRow(new Object[]{
+                    resultSet.getString("id_entrenador"),
+                    resultSet.getString("nombre"),
+                    resultSet.getString("apellido_paterno"),
+                    resultSet.getString("apellido_materno"),
+                    resultSet.getString("especialidad"),});
+            }
+        } catch (SQLException e) {
+        }
+        dbManager.cerrarConexion(connection);
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablePersonal.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {

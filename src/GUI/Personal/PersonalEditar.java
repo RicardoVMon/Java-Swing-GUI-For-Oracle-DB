@@ -15,26 +15,44 @@ import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClienteDAO;
+import gymbd.DBManager;
+import gymbd.PersonalDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author Daniel
- */
+
 public class PersonalEditar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PersonalEditar
-     */
+    private int idPersonal;
+    private static DBManager dbManager;
+    private static PersonalDAO personalDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+    
     public PersonalEditar() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+    }
+    
+    public PersonalEditar(int idPersonal) {
+        initComponents();
+        dbManager = new DBManager();
+        personalDAO = new PersonalDAO();
+        this.setVisible(true);
+        this.setLocationRelativeTo(null);
+        this.idPersonal = idPersonal;
+        generarHora();
+        obtenerDatosPersonal();
     }
 
     /**
@@ -74,10 +92,10 @@ public class PersonalEditar extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
-        txtNombre2 = new javax.swing.JTextField();
-        txtNombre3 = new javax.swing.JTextField();
+        txtApellido1 = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
+        txtApellido2 = new javax.swing.JTextField();
+        txtEspecialidad = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         btnModificar = new javax.swing.JButton();
@@ -333,9 +351,9 @@ public class PersonalEditar extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Apellido #1");
 
-        txtFecha.addActionListener(new java.awt.event.ActionListener() {
+        txtApellido1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFechaActionPerformed(evt);
+                txtApellido1ActionPerformed(evt);
             }
         });
 
@@ -346,6 +364,11 @@ public class PersonalEditar extends javax.swing.JFrame {
         jLabel15.setText("Apellido #2");
 
         btnModificar.setText("Modificar");
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -357,20 +380,20 @@ public class PersonalEditar extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(37, 37, 37))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre2, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtApellido2, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel14)
-                            .addComponent(txtNombre3)
+                            .addComponent(txtEspecialidad)
                             .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                         .addGap(33, 33, 33))))
         );
@@ -383,8 +406,8 @@ public class PersonalEditar extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -395,8 +418,8 @@ public class PersonalEditar extends javax.swing.JFrame {
                         .addComponent(jLabel15)
                         .addGap(9, 9, 9)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEspecialidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(74, 74, 74)
                 .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(43, Short.MAX_VALUE))
@@ -566,9 +589,39 @@ public class PersonalEditar extends javax.swing.JFrame {
         Principal principal = new Principal();
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
-    private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
+    private void txtApellido1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellido1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaActionPerformed
+    }//GEN-LAST:event_txtApellido1ActionPerformed
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                boolean resultado = personalDAO.actualizarPersonal(connection,
+                        idPersonal,
+                        txtNombre.getText(),
+                        txtApellido1.getText(),
+                        txtApellido2.getText(),
+                        txtEspecialidad.getText());
+
+                if (resultado) {
+                    JOptionPane.showMessageDialog(this, "Entrenador actualizado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al actualizar el entrenador.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error en la conversión de números: " + e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -586,6 +639,37 @@ public class PersonalEditar extends javax.swing.JFrame {
             }
         });
         timer.start();
+    }
+    
+    public void obtenerDatosPersonal() {
+        connection = dbManager.abrirConexion();
+
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            resultSet = personalDAO.obtenerPersonalPorID(connection, idPersonal);
+
+            if (resultSet == null) {
+                JOptionPane.showMessageDialog(this, "El resultset es nulo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (resultSet.next()) {
+                txtNombre.setText(resultSet.getString("NOMBRE"));
+                txtApellido1.setText(resultSet.getString("APELLIDO_PATERNO"));
+                txtApellido2.setText(resultSet.getString("APELLIDO_MATERNO"));
+                txtEspecialidad.setText(resultSet.getString("ESPECIALIDAD"));
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al encontrar datos para el entrenador seleccionado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+        } finally {
+            dbManager.cerrarConexion(connection);
+        }
     }
 
     public static void main(String args[]) {
@@ -659,9 +743,9 @@ public class PersonalEditar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
-    private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
-    private javax.swing.JTextField txtNombre3;
+    private javax.swing.JTextField txtApellido1;
+    private javax.swing.JTextField txtApellido2;
+    private javax.swing.JTextField txtEspecialidad;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }
