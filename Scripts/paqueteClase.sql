@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE Paquete_Entrenadores AS
+CREATE OR REPLACE PACKAGE Paquete_Clases AS
 
     -- Declaración de procedimientos
     PROCEDURE Actualizar_Clase(
@@ -29,9 +29,9 @@ CREATE OR REPLACE PACKAGE Paquete_Entrenadores AS
     PROCEDURE Obtener_Nombres_Entrenadores(
         DATOS OUT SYS_REFCURSOR);
 
-END Paquete_Entrenadores;
+END Paquete_Clases;
 
-CREATE OR REPLACE PACKAGE BODY Paquete_Entrenadores AS
+CREATE OR REPLACE PACKAGE BODY Paquete_Clases AS
 
     PROCEDURE Actualizar_Clase(
         V_ID_CLASE IN NUMBER, 
@@ -142,6 +142,6 @@ CREATE OR REPLACE PACKAGE BODY Paquete_Entrenadores AS
             WHERE ESTADO = 1;
     END;
 
-END Paquete_Entrenadores;
+END Paquete_Clases;
 
 
