@@ -1,39 +1,42 @@
-package GUI.Evaluaciones;
+package GUI.Inscripciones;
 
 import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Clientes.Clientes;
+import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
 import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
+import GUI.Principal;
 import GUI.Proveedores.Proveedores;
 import gymbd.DBManager;
-import gymbd.EvaluacionesDAO;
+import gymbd.InscripcionesDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
-public class Evaluaciones extends javax.swing.JFrame {
+public class Inscripciones extends javax.swing.JFrame {
 
     private static DBManager dbManager;
-    private static EvaluacionesDAO evaluacionesDAO;
+    private static InscripcionesDAO inscripcionesDAO;
     private static Connection connection;
     private static ResultSet resultSet;
 
-    public Evaluaciones() {
+    public Inscripciones() {
         initComponents();
-        dbManager = new DBManager();
-        evaluacionesDAO = new EvaluacionesDAO();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        dbManager = new DBManager();
+        inscripcionesDAO = new InscripcionesDAO();
         generarHora();
         obtenerDatosIniciales();
 
@@ -73,10 +76,9 @@ public class Evaluaciones extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         btnAgregar = new javax.swing.JButton();
-        btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tableEvaluaciones = new javax.swing.JTable();
+        tableInscripciones = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -260,7 +262,7 @@ public class Evaluaciones extends javax.swing.JFrame {
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Evaluaciones");
+        jLabel1.setText("Inscripciones");
 
         jHora.setBackground(new java.awt.Color(255, 255, 255));
         jHora.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
@@ -272,14 +274,11 @@ public class Evaluaciones extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(422, 422, 422)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(375, 375, 375)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(422, 422, 422)
-                        .addComponent(jHora)))
-                .addContainerGap(407, Short.MAX_VALUE))
+                    .addComponent(jLabel1)
+                    .addComponent(jHora))
+                .addContainerGap(360, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -322,13 +321,6 @@ public class Evaluaciones extends javax.swing.JFrame {
             }
         });
 
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-
         btnEliminar.setText("Eliminar");
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -336,23 +328,23 @@ public class Evaluaciones extends javax.swing.JFrame {
             }
         });
 
-        tableEvaluaciones.setModel(new javax.swing.table.DefaultTableModel(
+        tableInscripciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Peso", "Grasa Corporal", "Masa Muscular", "Fecha de Evaluación", "Id Cliente", "Nombre"
+                "Id Inscripción", "Nombre Clase", "Nombre Cliente", "Fecha de Inscripcion"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, false, true
+                false, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(tableEvaluaciones);
+        jScrollPane1.setViewportView(tableInscripciones);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -363,12 +355,10 @@ public class Evaluaciones extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(btnAgregar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnEditar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEliminar))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 878, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,11 +366,10 @@ public class Evaluaciones extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
-                    .addComponent(btnEditar)
                     .addComponent(btnEliminar))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Sistema");
@@ -441,7 +430,7 @@ public class Evaluaciones extends javax.swing.JFrame {
 
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
-        Evaluaciones principal = new Evaluaciones();
+        Principal principal = new Principal();
 
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
@@ -492,43 +481,33 @@ public class Evaluaciones extends javax.swing.JFrame {
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         this.dispose();
-        EvaluacionesAgregar evaluacionesAgregar = new EvaluacionesAgregar();
+        InscripcionesAgregar inscripcionesAgregar = new InscripcionesAgregar();
     }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int selectedRow = tableEvaluaciones.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona una evaluacion para editar.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String idEvaluacionString = tableEvaluaciones.getValueAt(selectedRow, 0).toString();
-        int idEvaluacionInt = Integer.parseInt(idEvaluacionString);
-
-        String idClienteString = tableEvaluaciones.getValueAt(selectedRow, 5).toString();
-        int idClienteInt = Integer.parseInt(idClienteString);
-        this.dispose();
-        EvaluacionesEditar evaluacionesEditar = new EvaluacionesEditar(idEvaluacionInt, idClienteInt);
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
 
-        int selectedRow = tableEvaluaciones.getSelectedRow();
+        int selectedRow = tableInscripciones.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona una evaluación para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona una inscripción para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String id = tableEvaluaciones.getValueAt(selectedRow, 0).toString();
+        String id = tableInscripciones.getValueAt(selectedRow, 0).toString();
         connection = dbManager.abrirConexion();
-        if (connection != null) {
-            boolean exito = evaluacionesDAO.eliminarEvaluacion(connection, Integer.parseInt(id));
-            if (exito) {
-                JOptionPane.showMessageDialog(this, "Evaluacion eliminada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-                refrescarTabla();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar la evaluacion.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            dbManager.cerrarConexion(connection);
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        boolean exito = inscripcionesDAO.eliminarInscripcion(connection, Integer.parseInt(id));
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Inscripción eliminada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al desactivar la inscripción", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        dbManager.cerrarConexion(connection);
+
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
@@ -540,53 +519,15 @@ public class Evaluaciones extends javax.swing.JFrame {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
+
+                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
-    }
-
-    public void obtenerDatosIniciales() {
-        DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
-        connection = dbManager.abrirConexion();
-        if (connection != null) {
-            resultSet = evaluacionesDAO.obtenerEvaluaciones(connection);
-            try {
-                while (resultSet.next()) {
-
-                    Date fechaPago = resultSet.getTimestamp("fecha_evaluacion");
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    String fechaFormateada = sdf.format(fechaPago);
-
-                    modeloTabla.addRow(new Object[]{
-                        resultSet.getString("id_evaluacion"),
-                        resultSet.getString("peso"),
-                        resultSet.getString("grasa_corporal"),
-                        resultSet.getString("masa_muscular"),
-                        fechaFormateada,
-                        resultSet.getString("id_cliente"),
-                        resultSet.getString("Nombre_Cliente"),});
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            dbManager.cerrarConexion(connection);
-        }
-    }
-
-    public void limpiarTabla() {
-        DefaultTableModel modeloTabla = (DefaultTableModel) tableEvaluaciones.getModel();
-        int cantidadFilas = modeloTabla.getRowCount();
-        for (int i = cantidadFilas - 1; i >= 0; i--) {
-            modeloTabla.removeRow(i);
-        }
-    }
-
-    public void refrescarTabla() {
-        limpiarTabla();
-        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {
@@ -603,28 +544,78 @@ public class Evaluaciones extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Evaluaciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Inscripciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Evaluaciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Inscripciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Evaluaciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Inscripciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Evaluaciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Inscripciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Evaluaciones().setVisible(true);
+                new Inscripciones().setVisible(true);
             }
         });
     }
 
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableInscripciones.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        resultSet = inscripcionesDAO.obtenerInscripciones(connection);
+        try {
+            while (resultSet.next()) {
+
+                Date fechaInscripcion = resultSet.getTimestamp("fecha_inscripcion");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                String fechaFormateada = sdf.format(fechaInscripcion);
+
+                modeloTabla.addRow(new Object[]{
+                    resultSet.getString("id_inscripcion"),
+                    resultSet.getString("nombre_clase"),
+                    resultSet.getString("nombre_completo"),
+                    fechaFormateada
+                });
+            }
+        } catch (SQLException e) {
+        }
+        dbManager.cerrarConexion(connection);
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableInscripciones.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
@@ -655,6 +646,6 @@ public class Evaluaciones extends javax.swing.JFrame {
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
     private javax.swing.JMenuItem menuAuditoria;
-    private javax.swing.JTable tableEvaluaciones;
+    private javax.swing.JTable tableInscripciones;
     // End of variables declaration//GEN-END:variables
 }

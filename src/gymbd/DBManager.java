@@ -9,7 +9,7 @@ import oracle.jdbc.OracleTypes;
 public class DBManager {
 
     private static String jdbcURL = "jdbc:oracle:thin:@localhost:1521:orcl";
-    private static String username = "PLENGUAJES";
+    private static String username = "PLENGUAJES_FINAL";
     private static String password = "PL";
     private CallableStatement callableStatement = null;
     private ResultSet resultSet = null;

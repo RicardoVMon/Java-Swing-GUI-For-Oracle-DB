@@ -1,9 +1,6 @@
 package gymbd;
 
 import GUI.Principal;
-import javax.swing.JOptionPane;
-import java.sql.Connection;
-import java.sql.ResultSet;
 
 public class Main {
 
