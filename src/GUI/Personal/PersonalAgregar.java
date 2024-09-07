@@ -1,13 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Personal;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Clientes.Clientes;
-import GUI.Clientes.ClientesAgregar;
-import GUI.Clientes.ClientesEditar;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
@@ -15,25 +10,30 @@ import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
+import gymbd.PersonalDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author Daniel
- */
 public class PersonalAgregar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PersonalAgregar
-     */
+    private static DBManager dbManager;
+    private static PersonalDAO personalDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public PersonalAgregar() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        dbManager = new DBManager();
+        personalDAO = new PersonalDAO();
         generarHora();
     }
 
@@ -74,20 +74,17 @@ public class PersonalAgregar extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
-        txtNombre2 = new javax.swing.JTextField();
-        txtNombre3 = new javax.swing.JTextField();
+        txtApellido1 = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
+        txtApellido2 = new javax.swing.JTextField();
+        txtEspecialidad = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         btnConfirmar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        btnInicio = new javax.swing.JMenuItem();
-        btnAgregar = new javax.swing.JMenuItem();
-        btnEditar = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -333,9 +330,9 @@ public class PersonalAgregar extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Apellido #1");
 
-        txtFecha.addActionListener(new java.awt.event.ActionListener() {
+        txtApellido1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFechaActionPerformed(evt);
+                txtApellido1ActionPerformed(evt);
             }
         });
 
@@ -346,6 +343,11 @@ public class PersonalAgregar extends javax.swing.JFrame {
         jLabel15.setText("Apellido #2");
 
         btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -357,20 +359,20 @@ public class PersonalAgregar extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(37, 37, 37))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre2, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtApellido2, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel14)
-                            .addComponent(txtNombre3)
+                            .addComponent(txtEspecialidad)
                             .addComponent(btnConfirmar, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                         .addGap(33, 33, 33))))
         );
@@ -383,8 +385,8 @@ public class PersonalAgregar extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -395,8 +397,8 @@ public class PersonalAgregar extends javax.swing.JFrame {
                         .addComponent(jLabel15)
                         .addGap(9, 9, 9)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEspecialidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(74, 74, 74)
                 .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(43, Short.MAX_VALUE))
@@ -435,35 +437,15 @@ public class PersonalAgregar extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Clientes");
-
-        btnInicio.setText("Inicio");
-        btnInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInicioActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnInicio);
-
-        btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnAgregar);
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnEditar);
-
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -500,21 +482,6 @@ public class PersonalAgregar extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
-        this.dispose();
-        Clientes clientes = new Clientes();
-    }//GEN-LAST:event_btnInicioActionPerformed
-
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        this.dispose();
-        ClientesAgregar clientesAgregar = new ClientesAgregar();
-    }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
         this.dispose();
@@ -566,9 +533,45 @@ public class PersonalAgregar extends javax.swing.JFrame {
         Principal principal = new Principal();
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
-    private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
+    private void txtApellido1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellido1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaActionPerformed
+    }//GEN-LAST:event_txtApellido1ActionPerformed
+
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        try {
+            connection = dbManager.abrirConexion();
+            if (connection == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean resultado = personalDAO.ingresarPersonal(
+                    connection,
+                    txtNombre.getText(),
+                    txtApellido1.getText(),
+                    txtApellido2.getText(),
+                    txtEspecialidad.getText()
+            );
+
+            String mensaje = resultado ? "Entrenador ingresado exitosamente." : "Error al ingresar el entrenador.";
+            int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+            JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (connection != null) {
+                dbManager.cerrarConexion(connection);
+            }
+        }
+    }//GEN-LAST:event_btnConfirmarActionPerformed
+
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
+        this.dispose();
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -621,10 +624,7 @@ public class PersonalAgregar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem btnAgregar;
     private javax.swing.JButton btnConfirmar;
-    private javax.swing.JMenuItem btnEditar;
-    private javax.swing.JMenuItem btnInicio;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
@@ -638,7 +638,6 @@ public class PersonalAgregar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -659,9 +658,10 @@ public class PersonalAgregar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
-    private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
-    private javax.swing.JTextField txtNombre3;
+    private javax.swing.JMenuItem menuAuditoria;
+    private javax.swing.JTextField txtApellido1;
+    private javax.swing.JTextField txtApellido2;
+    private javax.swing.JTextField txtEspecialidad;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Clientes;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
@@ -13,26 +10,32 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClienteDAO;
+import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author ricar
- */
 public class ClientesAgregar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static ClienteDAO clienteDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public ClientesAgregar() {
         initComponents();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        dbManager = new DBManager();
+        clienteDAO = new ClienteDAO();
         generarHora();
+        llenarComboBoxClientesAgregar();
 
     }
 
@@ -73,26 +76,23 @@ public class ClientesAgregar extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
+        txtApellido1 = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
-        txtNombre2 = new javax.swing.JTextField();
-        txtNombre3 = new javax.swing.JTextField();
+        txtApellido2 = new javax.swing.JTextField();
+        txtEdad = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbMembresia = new javax.swing.JComboBox<>();
         btnConfirmar = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
-        txtNombre4 = new javax.swing.JTextField();
-        txtNombre5 = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        txtTelefono = new javax.swing.JTextField();
         jLabel18 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        btnInicio = new javax.swing.JMenuItem();
-        btnAgregar = new javax.swing.JMenuItem();
-        btnEditar = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -234,7 +234,7 @@ public class ClientesAgregar extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jbMenuPrincipal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -338,9 +338,9 @@ public class ClientesAgregar extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Apellido #1");
 
-        txtFecha.addActionListener(new java.awt.event.ActionListener() {
+        txtApellido1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFechaActionPerformed(evt);
+                txtApellido1ActionPerformed(evt);
             }
         });
 
@@ -348,14 +348,23 @@ public class ClientesAgregar extends javax.swing.JFrame {
         jLabel13.setText("Tipo de Membresía");
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel14.setText("Fecha de Nacimiento");
+        jLabel14.setText("Edad");
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setText("Apellido #2");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbMembresia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMembresiaActionPerformed(evt);
+            }
+        });
 
         btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel17.setText("Email");
@@ -373,26 +382,26 @@ public class ClientesAgregar extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(37, 37, 37))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtNombre2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
-                                .addComponent(txtNombre4, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                                .addComponent(cbMembresia, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtApellido2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
+                                .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
                             .addComponent(jLabel15)
                             .addComponent(jLabel17))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel14)
-                            .addComponent(txtNombre3)
+                            .addComponent(txtEdad)
                             .addComponent(btnConfirmar, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
-                            .addComponent(txtNombre5)
+                            .addComponent(txtTelefono)
                             .addComponent(jLabel18))
                         .addGap(33, 33, 33))
                     .addGroup(jPanel5Layout.createSequentialGroup()
@@ -408,8 +417,8 @@ public class ClientesAgregar extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -420,8 +429,8 @@ public class ClientesAgregar extends javax.swing.JFrame {
                         .addComponent(jLabel15)
                         .addGap(8, 8, 8)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtApellido2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEdad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -432,14 +441,14 @@ public class ClientesAgregar extends javax.swing.JFrame {
                         .addComponent(jLabel17)
                         .addGap(8, 8, 8)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTelefono, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel13)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnConfirmar, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
-                    .addComponent(jComboBox1))
+                    .addComponent(cbMembresia))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
 
@@ -450,7 +459,7 @@ public class ClientesAgregar extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jLabel7)
-                .addContainerGap(400, Short.MAX_VALUE))
+                .addContainerGap(398, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -476,35 +485,15 @@ public class ClientesAgregar extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Clientes");
-
-        btnInicio.setText("Inicio");
-        btnInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInicioActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnInicio);
-
-        btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnAgregar);
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnEditar);
-
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -541,21 +530,6 @@ public class ClientesAgregar extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
-        this.dispose();
-        Clientes clientes = new Clientes();
-    }//GEN-LAST:event_btnInicioActionPerformed
-
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        this.dispose();
-        ClientesAgregar clientesAgregar = new ClientesAgregar();
-    }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
         this.dispose();
@@ -608,23 +582,84 @@ public class ClientesAgregar extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
-    private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
+    private void txtApellido1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtApellido1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaActionPerformed
+    }//GEN-LAST:event_txtApellido1ActionPerformed
+
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        
+        try {
+            connection = dbManager.abrirConexion();
+            if (connection == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int edad = Integer.parseInt(txtEdad.getText());
+            boolean resultado = clienteDAO.ingresarCliente(
+                    connection,
+                    txtNombre.getText(),
+                    txtApellido1.getText(),
+                    txtApellido2.getText(),
+                    edad,
+                    txtEmail.getText(),
+                    txtTelefono.getText(),
+                    cbMembresia.getSelectedItem().toString()
+            );
+
+            String mensaje = resultado ? "Cliente ingresado exitosamente." : "Error al ingresar el cliente.";
+            int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+            JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (connection != null) {
+                dbManager.cerrarConexion(connection);
+            }
+        }
+    }//GEN-LAST:event_btnConfirmarActionPerformed
+
+    private void cbMembresiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMembresiaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbMembresiaActionPerformed
+
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
+        this.dispose();
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
 
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
 
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
+    }
+
+    public void llenarComboBoxClientesAgregar() {
+
+        connection = dbManager.abrirConexion();
+        if (connection != null) {
+            resultSet = clienteDAO.obtenerMembresias(connection);
+            try {
+                cbMembresia.removeAllItems();
+                while (resultSet.next()) {
+                    String clienteNombre = resultSet.getString("Nombre");
+                    cbMembresia.addItem(clienteNombre);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
     }
 
     public static void main(String args[]) {
@@ -661,11 +696,8 @@ public class ClientesAgregar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem btnAgregar;
     private javax.swing.JButton btnConfirmar;
-    private javax.swing.JMenuItem btnEditar;
-    private javax.swing.JMenuItem btnInicio;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbMembresia;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
@@ -682,7 +714,6 @@ public class ClientesAgregar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -703,11 +734,12 @@ public class ClientesAgregar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
-    private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
-    private javax.swing.JTextField txtNombre3;
-    private javax.swing.JTextField txtNombre4;
-    private javax.swing.JTextField txtNombre5;
+    private javax.swing.JMenuItem menuAuditoria;
+    private javax.swing.JTextField txtApellido1;
+    private javax.swing.JTextField txtApellido2;
+    private javax.swing.JTextField txtEdad;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 }

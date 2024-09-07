@@ -1,13 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Evaluaciones;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Clientes.Clientes;
-import GUI.Clientes.ClientesAgregar;
-import GUI.Clientes.ClientesEditar;
 import GUI.Inventario.Inventario;
 import GUI.Membresias.Membresias;
 import GUI.Pagos.Pagos;
@@ -15,10 +10,16 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClienteDAO;
+import gymbd.DBManager;
+import gymbd.EvaluacionesDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -27,9 +28,27 @@ import javax.swing.Timer;
  */
 public class EvaluacionesEditar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form EvaluacionesEditar
-     */
+    private static DBManager dbManager;
+    private static EvaluacionesDAO evaluacionesDAO;
+    private static ClienteDAO clienteDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+    private static int idEvaluacion;
+    private static int idCliente;
+
+    public EvaluacionesEditar(int idEvaluacion, int idCliente) {
+        initComponents();
+        dbManager = new DBManager();
+        evaluacionesDAO = new EvaluacionesDAO();
+        clienteDAO = new ClienteDAO();
+        this.setVisible(true);
+        this.setLocationRelativeTo(null);
+        generarHora();
+        obtenerDatosEvaluacion(idEvaluacion);
+        this.idEvaluacion = idEvaluacion;
+        this.idCliente = idCliente;
+    }
+
     public EvaluacionesEditar() {
         initComponents();
         this.setVisible(true);
@@ -74,22 +93,19 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
+        txtGrasa = new javax.swing.JTextField();
+        txtPeso = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
-        txtNombre2 = new javax.swing.JTextField();
-        txtNombre3 = new javax.swing.JTextField();
+        txtMasa = new javax.swing.JTextField();
+        txtFecha = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbClientes = new javax.swing.JComboBox<>();
         btnModificar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        btnInicio = new javax.swing.JMenuItem();
-        btnAgregar = new javax.swing.JMenuItem();
-        btnEditar = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -335,9 +351,9 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Grasa Corporal");
 
-        txtFecha.addActionListener(new java.awt.event.ActionListener() {
+        txtGrasa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFechaActionPerformed(evt);
+                txtGrasaActionPerformed(evt);
             }
         });
 
@@ -350,14 +366,19 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setText("Masa Muscular");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        cbClientes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                cbClientesActionPerformed(evt);
             }
         });
 
         btnModificar.setText("Modificar");
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -369,11 +390,11 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPeso, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtGrasa, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(37, 37, 37))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel13)
@@ -381,13 +402,13 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtNombre2, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+                                .addComponent(cbClientes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtMasa, javax.swing.GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel14)
-                            .addComponent(txtNombre3)
+                            .addComponent(txtFecha)
                             .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
                         .addGap(33, 33, 33))))
         );
@@ -400,8 +421,8 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtGrasa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPeso, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -412,14 +433,14 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
                         .addComponent(jLabel15)
                         .addGap(9, 9, 9)))
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMasa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFecha, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel13)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
-                    .addComponent(jComboBox1))
+                    .addComponent(cbClientes))
                 .addContainerGap(43, Short.MAX_VALUE))
         );
 
@@ -456,35 +477,15 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Clientes");
-
-        btnInicio.setText("Inicio");
-        btnInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInicioActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnInicio);
-
-        btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnAgregar);
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnEditar);
-
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -521,21 +522,6 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
-        this.dispose();
-        Clientes clientes = new Clientes();
-    }//GEN-LAST:event_btnInicioActionPerformed
-
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        this.dispose();
-        ClientesAgregar clientesAgregar = new ClientesAgregar();
-    }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
         this.dispose();
@@ -587,32 +573,129 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
         Principal principal = new Principal();
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
-    private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
+    private void txtGrasaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGrasaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaActionPerformed
+    }//GEN-LAST:event_txtGrasaActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void cbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbClientesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_cbClientesActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                int peso = Integer.parseInt(txtPeso.getText());
+                int grasa = Integer.parseInt(txtGrasa.getText());
+                int masa = Integer.parseInt(txtMasa.getText());
+                boolean resultado = evaluacionesDAO.actualizarEvaluacion(connection,
+                        idEvaluacion,
+                        peso,
+                        grasa,
+                        masa,
+                        txtFecha.getText(),
+                        cbClientes.getSelectedItem().toString());
+
+                if (resultado) {
+                    JOptionPane.showMessageDialog(this, "Evaluacion actualizada exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al actualizar la evaluacion.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error en la conversión de números: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Ha ocurrido un error: " + e.getMessage());
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
+        this.dispose();
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
+
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
     }
-    
+
+    public void obtenerDatosEvaluacion(int idEvaluacion) {
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                llenarComboBoxClientes(connection);
+                resultSet = evaluacionesDAO.obtenerEvaluacionPorID(connection, idEvaluacion);
+
+                if (resultSet != null) {
+                    if (resultSet.next()) {
+
+                        Date fechaPago = resultSet.getTimestamp("fecha_evaluacion");
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        String fechaFormateada = sdf.format(fechaPago);
+
+                        txtPeso.setText(resultSet.getString("peso"));
+                        txtGrasa.setText(resultSet.getString("Grasa_corporal"));
+                        txtMasa.setText(resultSet.getString("masa_muscular"));
+                        txtFecha.setText(fechaFormateada);
+
+                        String nombreCliente = resultSet.getString("Nombre_Cliente");
+
+                        for (int i = 0; i < cbClientes.getItemCount(); i++) {
+                            if (cbClientes.getItemAt(i).equals(nombreCliente)) {
+                                cbClientes.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        System.out.println("No se encontraron datos para el ID de pago proporcionado.");
+                    }
+                } else {
+                    System.out.println("ResultSet es nulo.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }
+
+    public void llenarComboBoxClientes(Connection conexion) {
+
+        if (conexion != null) {
+            resultSet = clienteDAO.obtenerNombresClientes(conexion);
+
+            try {
+                cbClientes.removeAllItems();
+
+                while (resultSet.next()) {
+                    String clienteNombre = resultSet.getString("Nombre_Completo");
+                    cbClientes.addItem(clienteNombre);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -646,11 +729,8 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem btnAgregar;
-    private javax.swing.JMenuItem btnEditar;
-    private javax.swing.JMenuItem btnInicio;
     private javax.swing.JButton btnModificar;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbClientes;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
@@ -665,7 +745,6 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -686,9 +765,10 @@ public class EvaluacionesEditar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
+    private javax.swing.JMenuItem menuAuditoria;
     private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
-    private javax.swing.JTextField txtNombre3;
+    private javax.swing.JTextField txtGrasa;
+    private javax.swing.JTextField txtMasa;
+    private javax.swing.JTextField txtPeso;
     // End of variables declaration//GEN-END:variables
 }

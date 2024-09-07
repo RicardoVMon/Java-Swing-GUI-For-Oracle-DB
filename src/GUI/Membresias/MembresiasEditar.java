@@ -1,40 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Membresias;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
-import GUI.Clientes.Clientes;
-import GUI.Clientes.ClientesAgregar;
-import GUI.Clientes.ClientesEditar;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
+import GUI.Clientes.Clientes;
 import GUI.Pagos.Pagos;
 import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.MembresiaDAO;
+import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-/**
- *
- * @author Daniel
- */
 public class MembresiasEditar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form EditarMembresias
-     */
+    private int idMem;
+    private static DBManager dbManager;
+    private static MembresiaDAO membresiaDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public MembresiasEditar() {
         initComponents();
+        dbManager = new DBManager();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+    }
+
+    public MembresiasEditar(int idMem) {
+        initComponents();
+        dbManager = new DBManager();
+        membresiaDAO = new MembresiaDAO();
+        this.setVisible(true);
+        this.setLocationRelativeTo(null);
+        generarHora();
+        this.idMem = idMem;
+        obtenerDatosMembresia();
     }
 
     /**
@@ -72,22 +83,17 @@ public class MembresiasEditar extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtFecha = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
-        txtNombre2 = new javax.swing.JTextField();
-        txtNombre3 = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
+        txtNombre = new javax.swing.JTextField();
+        txtPrecio = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        btnModificar = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        txtDuracion = new javax.swing.JTextField();
+        btnConfirmar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        btnInicio = new javax.swing.JMenuItem();
-        btnAgregar = new javax.swing.JMenuItem();
-        btnEditar = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -327,79 +333,66 @@ public class MembresiasEditar extends javax.swing.JFrame {
 
         jPanel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel8.setText("ID");
-
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Nombre");
 
-        txtFecha.addActionListener(new java.awt.event.ActionListener() {
+        txtNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtFechaActionPerformed(evt);
+                txtNombreActionPerformed(evt);
             }
         });
-
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel14.setText("Fecha de Evaluación");
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setText("Precio");
 
-        btnModificar.setText("Modificar");
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel14.setText("Duración");
+
+        btnConfirmar.setText("Confirmar");
+        btnConfirmar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(37, 37, 37))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre2, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel15))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel14)
-                            .addComponent(txtNombre3)
-                            .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
-                        .addGap(33, 33, 33))))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel15)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+                    .addComponent(txtPrecio))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel14)
+                    .addComponent(txtDuracion)
+                    .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(76, 76, 76)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
                         .addComponent(jLabel14)
-                        .addGap(18, 18, 18))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(74, 74, 74)
+                        .addComponent(btnConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
                         .addComponent(jLabel15)
-                        .addGap(9, 9, 9)))
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtNombre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(74, 74, 74)
-                .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(43, Short.MAX_VALUE))
+                        .addGap(9, 9, 9)
+                        .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -435,35 +428,15 @@ public class MembresiasEditar extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Clientes");
-
-        btnInicio.setText("Inicio");
-        btnInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInicioActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnInicio);
-
-        btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnAgregar);
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnEditar);
-
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -500,21 +473,6 @@ public class MembresiasEditar extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
-        this.dispose();
-        Clientes clientes = new Clientes();
-    }//GEN-LAST:event_btnInicioActionPerformed
-
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        this.dispose();
-        ClientesAgregar clientesAgregar = new ClientesAgregar();
-    }//GEN-LAST:event_btnAgregarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
         this.dispose();
@@ -566,13 +524,77 @@ public class MembresiasEditar extends javax.swing.JFrame {
         Principal principal = new Principal();
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
-    private void txtFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaActionPerformed
+    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtFechaActionPerformed
+    }//GEN-LAST:event_txtNombreActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarActionPerformed
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                double precio = Double.parseDouble(txtPrecio.getText());
+                int duracion = Integer.parseInt(txtDuracion.getText());
+
+                boolean resultado = membresiaDAO.actualizarMembresia(connection,
+                        idMem,
+                        txtNombre.getText(),
+                        precio,
+                        duracion);
+
+                String mensaje = resultado ? "Membresia editada exitosamente." : "Error al editar la membresia.";
+                int mensajeTipo = resultado ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE;
+                JOptionPane.showMessageDialog(this, mensaje, "Resultado", mensajeTipo);
+
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Error en los datos ingresados: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Se ha producido un error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }//GEN-LAST:event_btnConfirmarActionPerformed
+
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
+        this.dispose();
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
+
+    public void obtenerDatosMembresia() {
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            try {
+                // Ejecuta el procedimiento almacenado
+                resultSet = membresiaDAO.obtenerMembresiaPorID(connection, idMem);
+
+                // Verifica si el ResultSet no es nulo
+                if (resultSet != null) {
+                    // Verifica si hay filas en el ResultSet
+                    if (resultSet.next()) {
+                        // Establece los valores en los campos de texto
+                        txtNombre.setText(resultSet.getString("NOMBRE"));
+                        txtPrecio.setText(resultSet.getString("PRECIO"));
+                        txtDuracion.setText(resultSet.getString("DURACION"));
+                    } else {
+                        System.out.println("No se encontraron datos para el ID de membresía proporcionado.");
+                    }
+                } else {
+                    System.out.println("ResultSet es nulo.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                dbManager.cerrarConexion(connection);
+            }
+        } else {
+            System.out.println("No se pudo establecer la conexión.");
+        }
+    }
+    
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
@@ -622,10 +644,7 @@ public class MembresiasEditar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem btnAgregar;
-    private javax.swing.JMenuItem btnEditar;
-    private javax.swing.JMenuItem btnInicio;
-    private javax.swing.JButton btnModificar;
+    private javax.swing.JButton btnConfirmar;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
@@ -636,10 +655,8 @@ public class MembresiasEditar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -660,9 +677,9 @@ public class MembresiasEditar extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
-    private javax.swing.JTextField txtFecha;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNombre2;
-    private javax.swing.JTextField txtNombre3;
+    private javax.swing.JMenuItem menuAuditoria;
+    private javax.swing.JTextField txtDuracion;
+    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 }

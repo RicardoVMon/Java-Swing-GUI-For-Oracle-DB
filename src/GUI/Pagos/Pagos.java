@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Pagos;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Clientes.Clientes;
 import GUI.Evaluaciones.Evaluaciones;
@@ -13,26 +10,33 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.DBManager;
+import gymbd.PagosDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Pagos extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Principal
-     */
+    private static DBManager dbManager;
+    private static PagosDAO pagosDAO;
+    private static Connection connection;
+    private static ResultSet resultSet;
+
     public Pagos() {
         initComponents();
+        dbManager = new DBManager();
+        pagosDAO = new PagosDAO();
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         generarHora();
+        obtenerDatosIniciales();
 
     }
 
@@ -77,6 +81,7 @@ public class Pagos extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -310,17 +315,14 @@ public class Pagos extends javax.swing.JFrame {
 
         tablePagos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
-                "ID", "Monto", "Fecha Pago", "Método Pago", "Concepto", "Cliente"
+                "ID", "Monto", "Fecha Pago", "Método Pago", "Concepto", "Id Cliente", "Cliente"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, false
+                false, true, true, true, true, true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -389,6 +391,14 @@ public class Pagos extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
@@ -430,7 +440,7 @@ public class Pagos extends javax.swing.JFrame {
     private void jbMenuPrincipalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMenuPrincipalActionPerformed
         this.dispose();
         Principal principal = new Principal();
-        
+
     }//GEN-LAST:event_jbMenuPrincipalActionPerformed
 
     private void jbClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClientesActionPerformed
@@ -444,8 +454,8 @@ public class Pagos extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPagosActionPerformed
 
     private void jbEvaluacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEvaluacionesActionPerformed
-       this.dispose();
-       Evaluaciones evaluaciones = new Evaluaciones();
+        this.dispose();
+        Evaluaciones evaluaciones = new Evaluaciones();
     }//GEN-LAST:event_jbEvaluacionesActionPerformed
 
     private void jbMembresiasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMembresiasActionPerformed
@@ -484,27 +494,108 @@ public class Pagos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tablePagos.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un pago para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idPagoString = tablePagos.getValueAt(selectedRow, 0).toString();
+        int idPagoInt = Integer.parseInt(idPagoString);
+
+        String idClienteString = tablePagos.getValueAt(selectedRow, 5).toString();
+        int idClienteInt = Integer.parseInt(idClienteString);
+
         this.dispose();
-        PagosEditar pagosEditar = new PagosEditar();
+        PagosEditar pagosEditar = new PagosEditar(idPagoInt, idClienteInt);
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = tablePagos.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un pago para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String id = tablePagos.getValueAt(selectedRow, 0).toString();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            boolean exito = pagosDAO.eliminarPago(connection, Integer.parseInt(id));
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Pago eliminado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                refrescarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el pago.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            dbManager.cerrarConexion(connection);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
+        this.dispose();
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
 
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Obtener la hora actual y formatearla
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String currentTime = sdf.format(new Date());
-
-                // Actualizar el JLabel con la hora actual
                 jHora.setText(currentTime);
             }
         });
         timer.start();
+    }
+
+    public void obtenerDatosIniciales() {
+
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablePagos.getModel();
+
+        connection = dbManager.abrirConexion();
+
+        if (connection != null) {
+            resultSet = pagosDAO.obtenerPagos(connection);
+
+            try {
+                while (resultSet.next()) {
+
+                    Date fechaPago = resultSet.getTimestamp("fecha_pago");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    String fechaFormateada = sdf.format(fechaPago);
+
+                    modeloTabla.addRow(new Object[]{
+                        resultSet.getString("id_pago"),
+                        resultSet.getString("monto"),
+                        fechaFormateada,
+                        resultSet.getString("metodo_pago"),
+                        resultSet.getString("concepto"),
+                        resultSet.getString("id_cliente"),
+                        resultSet.getString("Nombre_Cliente"),});
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            dbManager.cerrarConexion(connection);
+        }
+
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tablePagos.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {
@@ -572,6 +663,7 @@ public class Pagos extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
+    private javax.swing.JMenuItem menuAuditoria;
     private javax.swing.JTable tablePagos;
     // End of variables declaration//GEN-END:variables
 }

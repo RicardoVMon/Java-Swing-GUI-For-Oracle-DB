@@ -9,7 +9,7 @@ import oracle.jdbc.OracleTypes;
 public class DBManager {
 
     private static String jdbcURL = "jdbc:oracle:thin:@localhost:1521:orcl";
-    private static String username = "PLENGUAJES";
+    private static String username = "PLENGUAJES_FINAL";
     private static String password = "PL";
     private CallableStatement callableStatement = null;
     private ResultSet resultSet = null;
@@ -23,31 +23,6 @@ public class DBManager {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("No se pudo establecer la conexión");
-            return null;
-        }
-    }
-
-    public ResultSet ejecutarProcedimiento(Connection conexion, String sql) {
-        try {
-            callableStatement = conexion.prepareCall(sql);
-            callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
-            callableStatement.execute();
-            resultSet = (ResultSet) callableStatement.getObject(1);
-            return resultSet;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public Object ejecutarFuncion(Connection conexion, String sql, int tipoSalida) {
-        try {
-            callableStatement = conexion.prepareCall(sql);
-            callableStatement.registerOutParameter(1, tipoSalida);
-            callableStatement.execute();
-            return callableStatement.getObject(1);
-        } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -81,4 +56,3 @@ public class DBManager {
         }
     }
 }
-

@@ -17,6 +17,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="menuAuditoria">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Auditor&#xed;a"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuAuditoriaActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
       </SubComponents>
@@ -470,8 +478,8 @@
               </Group>
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                  <Component id="jLabel10" min="-2" pref="690" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="103" max="-2" attributes="0"/>
+                  <Component id="jLabel10" min="-2" pref="626" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="175" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -484,8 +492,8 @@
                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                   <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                  <Component id="jLabel10" min="-2" pref="343" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel10" min="-2" pref="410" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -521,7 +529,7 @@
         <Component class="javax.swing.JLabel" name="jLabel10">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/GUI/Img/En construcci&#xf3;n.png"/>
+              <Image iconType="3" name="/GUI/Img/OficiallOGO.png"/>
             </Property>
           </Properties>
         </Component>

@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.Clientes;
 
+import GUI.Auditoria.Auditoria;
 import GUI.Clases.Clases;
 import GUI.Evaluaciones.Evaluaciones;
 import GUI.Inventario.Inventario;
@@ -13,23 +10,23 @@ import GUI.Pedidos.Pedidos;
 import GUI.Personal.Personal;
 import GUI.Principal;
 import GUI.Proveedores.Proveedores;
+import gymbd.ClienteDAO;
 import gymbd.DBManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author ricar
- */
 public class Clientes extends javax.swing.JFrame {
 
     private static DBManager dbManager;
+    private static ClienteDAO clienteDAO;
     private static Connection connection;
     private static ResultSet resultSet;
 
@@ -39,6 +36,7 @@ public class Clientes extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         generarHora();
         dbManager = new DBManager();
+        clienteDAO = new ClienteDAO();
         obtenerDatosIniciales();
 
     }
@@ -79,15 +77,13 @@ public class Clientes extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableClientes = new javax.swing.JTable();
         btnAgregarCliente = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
+        btnRefrescar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        btnInicio = new javax.swing.JMenuItem();
-        btnAgregar = new javax.swing.JMenuItem();
-        btnEditar = new javax.swing.JMenuItem();
+        menuAuditoria = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -347,10 +343,10 @@ public class Clientes extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Editar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnEditarActionPerformed(evt);
             }
         });
 
@@ -361,24 +357,33 @@ public class Clientes extends javax.swing.JFrame {
             }
         });
 
+        btnRefrescar.setText("Refrescar");
+        btnRefrescar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefrescarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(btnAgregarCliente)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)
+                        .addComponent(btnEditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnEliminar))
+                        .addComponent(btnEliminar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnRefrescar))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 878, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
-        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAgregarCliente, btnEliminar, jButton2});
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAgregarCliente, btnEditar, btnEliminar});
 
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -386,11 +391,12 @@ public class Clientes extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregarCliente)
-                    .addComponent(jButton2)
-                    .addComponent(btnEliminar))
+                    .addComponent(btnEditar)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnRefrescar))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 478, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Sistema");
@@ -403,35 +409,15 @@ public class Clientes extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
+        menuAuditoria.setText("Auditoría");
+        menuAuditoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuAuditoriaActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuAuditoria);
+
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Clientes");
-
-        btnInicio.setText("Inicio");
-        btnInicio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInicioActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnInicio);
-
-        btnAgregar.setText("Agregar");
-        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAgregarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnAgregar);
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jMenu2.add(btnEditar);
-
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -520,34 +506,57 @@ public class Clientes extends javax.swing.JFrame {
         Pedidos pedidos = new Pedidos();
     }//GEN-LAST:event_jbPedidosActionPerformed
 
-    private void btnInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInicioActionPerformed
-        this.dispose();
-        Clientes clientes = new Clientes();
-    }//GEN-LAST:event_btnInicioActionPerformed
-
     private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
         this.dispose();
         ClientesAgregar clientesAgregar = new ClientesAgregar();
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int selectedRow = tableClientes.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario para editar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String idUsuarioString = tableClientes.getValueAt(selectedRow, 0).toString();
+        int idUsuarioInt = Integer.parseInt(idUsuarioString);
         this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_jButton2ActionPerformed
+        ClientesEditar clientesEditar = new ClientesEditar(idUsuarioInt);
+
+    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+
+        int selectedRow = tableClientes.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String id = tableClientes.getValueAt(selectedRow, 0).toString();
+        connection = dbManager.abrirConexion();
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean exito = clienteDAO.eliminarCliente(connection, Integer.parseInt(id));
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Usuario desactivado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al desactivar el usaurio", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        dbManager.cerrarConexion(connection);
     }//GEN-LAST:event_btnEliminarActionPerformed
 
-    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        this.dispose();
-        ClientesAgregar clientesAgregar = new ClientesAgregar();
-    }//GEN-LAST:event_btnAgregarActionPerformed
+    private void btnRefrescarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefrescarActionPerformed
+        refrescarTabla();
+    }//GEN-LAST:event_btnRefrescarActionPerformed
 
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+    private void menuAuditoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAuditoriaActionPerformed
         this.dispose();
-        ClientesEditar clientesEditar = new ClientesEditar();
-    }//GEN-LAST:event_btnEditarActionPerformed
+        Auditoria auditoria = new Auditoria();
+    }//GEN-LAST:event_menuAuditoriaActionPerformed
 
     public void generarHora() {
         Timer timer = new Timer(50, new ActionListener() {
@@ -570,27 +579,41 @@ public class Clientes extends javax.swing.JFrame {
 
         connection = dbManager.abrirConexion();
 
-        if (connection != null) {
-            resultSet = dbManager.ejecutarProcedimiento(connection, "{CALL Obtener_Clientes(?)}");
-
-            try {
-                while (resultSet.next()) {
-                    modeloTabla.addRow(new Object[]{
-                        resultSet.getString("id_cliente"), 
-                        resultSet.getString("nombre"), 
-                        resultSet.getString("apellido_paterno"), 
-                        resultSet.getString("apellido_materno"),
-                        resultSet.getString("edad"),
-                        resultSet.getString("email"),
-                        resultSet.getString("telefono"),
-                        resultSet.getString("nombre_membresia")
-                    });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            dbManager.cerrarConexion(connection);
+        if (connection == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo establecer la conexión.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        resultSet = clienteDAO.obtenerClientes(connection);
+        try {
+            while (resultSet.next()) {
+                modeloTabla.addRow(new Object[]{
+                    resultSet.getString("id_cliente"),
+                    resultSet.getString("nombre"),
+                    resultSet.getString("apellido_paterno"),
+                    resultSet.getString("apellido_materno"),
+                    resultSet.getString("edad"),
+                    resultSet.getString("email"),
+                    resultSet.getString("telefono"),
+                    resultSet.getString("nombre_membresia")
+                });
+            }
+        } catch (SQLException e) {
+        }
+        dbManager.cerrarConexion(connection);
+    }
+
+    public void limpiarTabla() {
+        DefaultTableModel modeloTabla = (DefaultTableModel) tableClientes.getModel();
+        int cantidadFilas = modeloTabla.getRowCount();
+        for (int i = cantidadFilas - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
+        }
+    }
+
+    public void refrescarTabla() {
+        limpiarTabla();
+        obtenerDatosIniciales();
     }
 
     public static void main(String args[]) {
@@ -604,16 +627,24 @@ public class Clientes extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Clientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Clientes.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -627,12 +658,10 @@ public class Clientes extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem btnAgregar;
     private javax.swing.JButton btnAgregarCliente;
-    private javax.swing.JMenuItem btnEditar;
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JMenuItem btnInicio;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnRefrescar;
     private javax.swing.JLabel jHora;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -641,7 +670,6 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -662,6 +690,7 @@ public class Clientes extends javax.swing.JFrame {
     private javax.swing.JButton jbPedidos;
     private javax.swing.JButton jbPersonal;
     private javax.swing.JButton jbProveedores;
+    private javax.swing.JMenuItem menuAuditoria;
     private javax.swing.JTable tableClientes;
     // End of variables declaration//GEN-END:variables
 }
