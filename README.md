@@ -26,7 +26,7 @@ private static String password = "PL";
 - `username`: your Oracle username
 - `password`: your database password
 
-### Paso 2: Ejecutar el script SQL
+### Step 2: Execute the SQL script
 
 Before using the application, you must execute the script `LenguajesBD_ScriptFinal.sql` in your database. To do this:
 
@@ -37,7 +37,7 @@ Before using the application, you must execute the script `LenguajesBD_ScriptFin
    @/path/to/file/LenguajesBD_ScriptFinal.sql
    ```
 
-### Paso 3: Run the Application
+### Step 3: Run the Application
 
 Once the database is set up, you can run the application from your development environment. The graphical interface will allow you to perform CRUD operations on all the tables.
 
