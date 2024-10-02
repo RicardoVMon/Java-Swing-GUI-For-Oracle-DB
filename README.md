@@ -1,20 +1,20 @@
-# Gestión de Gimnasio - CRUD en Java con Oracle y Swing
+# Gym Management - CRUD in Java with Oracle and Swing
 
-Este proyecto es una aplicación de escritorio desarrollada en Java, utilizando **Swing** para la interfaz gráfica, y conectada a una base de datos Oracle. La aplicación permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre las distintas tablas de un sistema de gestión de gimnasio, como clientes, entrenadores, clases, membresías, y más.
+This project is a desktop application developed in Java, using Swing for the graphical interface, and connected to an Oracle database. The application allows you to perform CRUD (Create, Read, Update, Delete) operations on various tables of a gym management system, such as clients, trainers, classes, memberships, and more.
 
-## Requisitos
+## Requirements
 
-- Java 8 o superior
-- Oracle Database (versión 11g o superior)
+- Java 8 or higher
+- Oracle Database (version 11g or higher)
 - Oracle JDBC Driver
-- Swing para la interfaz gráfica
-- Script SQL: `LenguajesBD_ScriptFinal.sql`
+- Swing for the graphical interface
+- SQL Script: `LenguajesBD_ScriptFinal.sql`
 
-## Configuración
+## Configuration
 
-### Paso 1: Configurar la conexión a la base de datos
+### Step 1: Configure the Database Connection
 
-Debes cambiar las credenciales de conexión a tu base de datos Oracle en el archivo del proyecto correspondiente. Asegúrate de actualizar los siguientes valores:
+You need to change the connection credentials to your Oracle database in the corresponding project file. Make sure to update the following values:
 
 ```java
 private static String jdbcURL = "jdbc:oracle:thin:@localhost:1521:orcl";
@@ -22,40 +22,40 @@ private static String username = "PLENGUAJES_FINAL";
 private static String password = "PL";
 ```
 
-- `jdbcURL`: la URL de conexión de tu base de datos Oracle
-- `username`: tu nombre de usuario de Oracle
-- `password`: la contraseña de tu base de datos
+- `jdbcURL`: the connection URL of your Oracle database
+- `username`: your Oracle username
+- `password`: your database password
 
 ### Paso 2: Ejecutar el script SQL
 
-Antes de utilizar la aplicación, debes ejecutar el script `LenguajesBD_ScriptFinal.sql` en tu base de datos. Para esto:
+Before using the application, you must execute the script `LenguajesBD_ScriptFinal.sql` in your database. To do this:
 
-1. Inicia sesión en Oracle con un usuario administrador (por ejemplo, **SYS**).
-2. Ejecuta el siguiente comando en tu terminal de SQL*Plus o cliente SQL:
+1. Log in to Oracle with an admin user (e.g., SYS).
+2. Execute the following command in your SQL*Plus terminal or SQL client:
 
    ```sql
-   @/ruta/al/archivo/LenguajesBD_ScriptFinal.sql
+   @/path/to/file/LenguajesBD_ScriptFinal.sql
    ```
 
-### Paso 3: Ejecutar la aplicación
+### Paso 3: Run the Application
 
-Una vez que la base de datos esté configurada, puedes ejecutar la aplicación desde tu entorno de desarrollo. La interfaz gráfica te permitirá realizar operaciones CRUD en todas las tablas.
+Once the database is set up, you can run the application from your development environment. The graphical interface will allow you to perform CRUD operations on all the tables.
 
-## Funcionalidades
+## Features
 
-- **Gestión de Clientes**
-- **Gestión de Entrenadores**
-- **Gestión de Clases**
-- **Gestión de Membresías**
-- **Control de Inventario**
-- **Auditoría**
-- **Control de Evaluaciones de Clientes**
-- **Gestión de Pedidos**
-- **Control de Pagos**
-- **Control de Proveedores**
-- **Control de Inscripciones a Clases**
+- **Client Management**
+- **Trainer Management**
+- **Class Management**
+- **Membership Management**
+- **Inventory Control**
+- **Auditing**
+- **Client Assessment Control**
+- **Order Management**
+- **Payment Control**
+- **Supplier Control**
+- **Class Enrollment Control**
 
-## Tecnologías utilizadas
+## Technologies Used
 
 - Java Swing
 - JDBC (Java Database Connectivity)
